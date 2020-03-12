@@ -51,7 +51,7 @@
           @mouseenter="showUserPanel"
           @mouseleave="showUserPanel"
         >
-          <img src alt ref="user-image" />
+          <img :src="user_info.head_portrait" alt ref="user-image" />
         </div>
         <div v-else class="open-login">
           <a href="javascript:;" class="open-login" @click="openLogin">登录</a>
@@ -68,7 +68,7 @@
       <div class="login-page" v-if="loginFlag">
         <div class="login-header">
           <span class="login-title">登录</span>
-          <span class="close glyphicon glyphicon-remove" @click="closeLogin"></span>
+          <span class="close" @click="closeLogin"></span>
         </div>
         <div class="input-container">
           <label for="username">账号</label>
@@ -95,6 +95,7 @@
 export default {
   data() {
     return {
+      user_info: {},
       loginFlag: false,
       ifLogin: false,
       ifshowUserPanel: false,
@@ -122,9 +123,11 @@ export default {
         .then(res => {
           if (res.data === "err") {
           } else {
-            this.$store.dispatch('setUserInfo', res.data)
+            this.$store.dispatch("setUserInfo", res.data);
+            this.user_info = res.data;
             this.ifLogin = true;
-          } 
+            this.loginFlag = false;
+          }
         })
         .catch(err => {
           console.error(err);
@@ -133,20 +136,7 @@ export default {
     showUserPanel() {
       this.ifshowUserPanel = !this.ifshowUserPanel;
     },
-    getMusic() {
-      // this.axios
-      //   .get("api/users/music", {
-      //     params: {
-      //       id: 1
-      //     }
-      //   })
-      //   .then(res => {
-      //     this.$store.commit({
-      //       type: "setMusic",
-      //       music: res.data
-      //     });
-      //   });
-    },
+    getMusic() {},
     init() {
       this.getMusic();
     },
@@ -258,6 +248,7 @@ h1 {
   color: darkgray;
   height: 60px;
   line-height: 60px;
+  font-size: 12px;
 
   a:hover {
     text-decoration: underline;
@@ -283,6 +274,34 @@ h1 {
 .login-header {
   padding: 5px;
   background-color: #282828;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .close {
+    width: 10px;
+    height: 10px;
+  }
+
+  .close::before {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 5px;
+    border-radius: 5px;
+    background: white;
+    transform: translateY(50%) translateX(-50%) rotateZ(45deg);
+  }
+
+  .close::after {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 5px;
+    border-radius: 5px;
+    background: white;
+    transform: translateY(-50%) translateX(-50%) rotateZ(-45deg);
+  }
 }
 
 .login-title {
@@ -348,6 +367,7 @@ input[type="password"] {
   border-radius: 50%;
   background-color: white;
   align-self: center;
+  overflow: hidden;
 
   img {
     width: 100%;
@@ -362,5 +382,6 @@ input[type="password"] {
   top: 50px;
   border: 1px solid #202020;
   box-shadow: 0 0 20px #282828;
+  z-index: 1000;
 }
 </style>

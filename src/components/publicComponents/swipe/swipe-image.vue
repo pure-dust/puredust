@@ -1,7 +1,9 @@
 <template>
   <div class="contain_box" ref="contain_box">
     <div class="item">
-      <div class="image" ref='img'></div>
+      <div class="image">
+        <img :src="currentimg" alt />
+      </div>
     </div>
     <div class="arrow">
       <div class="arrow"></div>
@@ -22,14 +24,14 @@ export default {
       list: this.image,
       length: this.image.length,
       currentId: 0,
-      clock: null
+      clock: null,
+      currentimg: null
     };
   },
   methods: {
     rotate() {
-      let temp = this.$refs.img
-      temp.style.backgroundImage = 'url(' + this.list[0] + ')'
-
+      console.log(this.list);
+      this.currentimg = this.list[0];
       if (this.clock != null) return;
       else {
         this.clock = setInterval(() => {
@@ -37,15 +39,15 @@ export default {
           else {
             this.currentId++;
           }
-            temp.style.backgroundImage = 'url(' + this.list[this.currentId] + ')'
+          this.currentimg = this.list[this.currentId];
         }, this.time);
       }
     }
   },
-  created() {},
-  mounted() {
+  created() {
     this.rotate();
   },
+  mounted() {},
   props: {
     image: {
       type: Array,
@@ -78,17 +80,22 @@ export default {
   .image {
     width: 100%;
     height: 100%;
-    animation: change 4s ease  infinite;
-    -webkit-animation: change 4s ease  infinite;
+    animation: change 4s ease infinite;
+    -webkit-animation: change 4s ease infinite;
     background-size: 100%;
     background-repeat: no-repeat;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
   }
 
   @keyframes change {
     0% {
       opacity: 1;
     }
-    75%{
+    75% {
       opacity: 0.8;
     }
     100% {

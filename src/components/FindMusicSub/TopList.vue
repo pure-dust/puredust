@@ -397,6 +397,7 @@ export default {
     table {
       width: 100%;
       border: 1px solid rgba(28, 28, 28, 0.3);
+      border-collapse: collapse;
 
       th,
       td {

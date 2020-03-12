@@ -21,7 +21,7 @@
               <div v-for="(item, i) in music_list" :key="i" class="detail-container">
                 <div class="img-container">
                   <a :href="item.url" :title="item.title" class="link">
-                    <img :src="item.imgUrl" alt class="list-item" />
+                    <img :src="item.music_album" alt class="list-item" />
                   </a>
                 </div>
                 <div class="bottom">
@@ -38,64 +38,58 @@
             </div>
             <div class="music-list">
               <div class="music-container">
-                <div
-                  class="glyphicon glyphicon-chevron-left move-arrow"
-                  @click="list_move('left', $event)"
-                ></div>
+                <div class="left-move-arrow" @click="list_move('left', $event)"></div>
                 <div class="list-container">
                   <ul ref="move_list1">
-                    <li v-for="(item ,i) in song_list" :key="i" class="detail-container">
+                    <li v-for="(item ,i) in song_list_1" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.title" class="link">
-                          <img :src="item.imgUrl" alt class="list-item" />
+                        <a :href="item.url" :title="item.music_name" class="link">
+                          <img :src="item.music_album" alt class="list-item" />
                         </a>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.title">{{ item.title }}</a>
+                        <a :href="item.url" :title="item.title">{{ item.music_name }}</a>
                       </div>
                     </li>
                   </ul>
                   <ul ref="move_list2">
-                    <li v-for="(item ,i) in song_list" :key="i" class="detail-container">
+                    <li v-for="(item ,i) in song_list_2" :key="i" class="detail-container">
                       <div class="img-container">
                         <a :href="item.url" :title="item.title" class="link">
-                          <img :src="item.imgUrl" alt class="list-item" />
+                          <img :src="item.music_album" alt class="list-item" />
                         </a>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.title">{{ item.title }}</a>
+                        <a :href="item.url" :title="item.title">{{ item.music_name }}</a>
                       </div>
                     </li>
                   </ul>
                   <ul ref="move_list3">
-                    <li v-for="(item ,i) in song_list" :key="i" class="detail-container">
+                    <li v-for="(item ,i) in song_list_1" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.title" class="link">
-                          <img :src="item.imgUrl" alt class="list-item" />
+                        <a :href="item.url" :title="item.music_name" class="link">
+                          <img :src="item.music_album" alt class="list-item" />
                         </a>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.title">{{ item.title }}</a>
+                        <a :href="item.url" :title="item.music_name">{{ item.music_name }}</a>
                       </div>
                     </li>
                   </ul>
                   <ul ref="move_list4">
-                    <li v-for="(item ,i) in song_list" :key="i" class="detail-container">
+                    <li v-for="(item ,i) in song_list_2" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.title" class="link">
-                          <img :src="item.imgUrl" alt class="list-item" />
+                        <a :href="item.url" :title="item.music_name" class="link">
+                          <img :src="item.music_album" alt class="list-item" />
                         </a>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.title">{{ item.title }}</a>
+                        <a :href="item.url" :title="item.music_name">{{ item.music_name }}</a>
                       </div>
                     </li>
                   </ul>
                 </div>
-                <div
-                  class="glyphicon glyphicon-chevron-right move-arrow"
-                  @click="list_move('right', $event)"
-                ></div>
+                <div class="right-move-arrow" @click="list_move('right', $event)"></div>
               </div>
             </div>
           </div>
@@ -192,9 +186,7 @@
         </div>
         <div class="main-right">
           <div class="user-area">
-            <div class="login">
-
-            </div>
+            <div class="login"></div>
             <div class="logout">
               <p>登录尘心音乐，可以享受无限收藏的乐趣，并且无限同步到手机</p>
               <button>用户登录</button>
@@ -240,7 +232,8 @@ export default {
       //歌单
       music_list: [],
       //歌曲菜单
-      song_list: [],
+      song_list_1: [],
+      song_list_2: [],
       //歌曲滑动标识
       temp: 1,
       //排行榜
@@ -250,91 +243,67 @@ export default {
   },
   methods: {
     getRotation() {
-      this.axios
-        .get("api/users/rotation")
+      this.axios({
+        methods: "GET",
+        url: "api/users/rotation"
+      })
         .then(res => {
-          if (res) {
-            for (let i = 0; i < res.data.length; i++)
-              this.rotationChartData[i] = res.data[i];
-          }
+          for (let i = 0; i < res.data.length; i++)
+            this.rotationChartData[i] = res.data[i].data;
         })
         .catch(err => {
-          for (let i = 0; i < 3; i++) {
-            this.rotationChartData[i] = "images/" + (i + 1) + ".png";
-          }
+          console.log(err);
+        });
+    },
+    getMusicList() {
+      this.axios({
+        method: "GET",
+        url: "api/users/musiclist"
+      })
+        .then(res => {
+          this.music_list = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getSongList() {
+      this.axios({
+        method: "GET",
+        url: "api/users/songlist"
+      })
+        .then(res => {
+          this.song_list_1 = res.data.slice(0, 5);
+          this.song_list_2 = res.data.slice(5);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getRankingList() {
+      this.axios({
+        methods: "GET",
+        url: "api/users/rangkinglist"
+      })
+        .then(res => {})
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getMusician() {
+      this.axios({
+        methods: "GET",
+        url: "api/users/musician"
+      })
+        .then(res => {})
+        .catch(err => {
+          console.log(err);
         });
     },
     init() {
       this.recommend_menu = ["华语", "流行", "摇滚", "民谣", "电子"];
-      this.music_list = [
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        }
-      ];
-      this.song_list = [
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        }
-      ];
+      this.getMusicList();
+      this.getSongList();
       this.ranking_list = [
         [
           {
@@ -551,9 +520,10 @@ export default {
       }
     }
   },
-  created: function() {
+  created() {
     this.getRotation();
-    this.init();
+    this.getMusicList();
+    this.getSongList();
   },
   mounted() {
     let list1 = this.$refs.move_list1;
@@ -564,8 +534,7 @@ export default {
     list2.style.left = 0;
     list3.style.left = "100%";
     list4.style.left = "200%";
-  },
-  updated: function() {}
+  }
 };
 </script>
 
@@ -619,12 +588,35 @@ export default {
 .music-list {
   border: 1px solid rgba(28, 28, 28, 0.3);
   background-color: #eeeeee;
+  padding: 10px 0;
 
   .music-container {
     display: flex;
     justify-content: space-around;
     height: 180px;
     padding: 0 10px;
+
+    .left-move-arrow {
+      height: 15px;
+      width: 15px;
+      border-width: 5px;
+      border-color: transparent transparent #aaaaaa #aaaaaa;
+      border-style: solid;
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      align-self: center;
+    }
+
+    .right-move-arrow {
+      height: 15px;
+      width: 15px;
+      border-width: 5px;
+      border-color: #aaaaaa #aaaaaa transparent transparent;
+      border-style: solid;
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      align-self: center;
+    }
 
     .list-container {
       width: 100%;
@@ -640,15 +632,19 @@ export default {
       flex-wrap: wrap;
       justify-content: space-between;
       background-color: #eeeeee;
-      margin: 10px auto;
       top: 0;
       bottom: 0;
       position: absolute;
-      padding: 10px 0;
+      padding: 10px 10px 0 10px;
       transition: all 1s ease-out;
 
       li {
         width: 18%;
+        padding: 0 5px;
+
+        .link {
+          padding: 0;
+        }
       }
     }
 
@@ -783,6 +779,7 @@ export default {
 
     a {
       color: rgba(28, 28, 28, 0.8);
+      font-size: 14px;
     }
 
     .title {
@@ -833,6 +830,10 @@ export default {
       width: 100%;
       height: 100%;
     }
+
+    .list-item:hover {
+      cursor: pointer;
+    }
   }
 
   .bottom {
@@ -841,7 +842,11 @@ export default {
 
     a {
       color: #282828;
-      font-size: 16px;
+      font-size: 12px;
+    }
+    a:hover {
+      text-decoration: underline;
+      cursor: pointer;
     }
   }
 }
@@ -898,6 +903,7 @@ export default {
 
     a {
       color: gray;
+      font-size: 12px;;
     }
   }
 

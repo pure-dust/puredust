@@ -344,10 +344,12 @@ export default {
 
 .play-container:hover {
   bottom: 0px;
+  transition-duration: .2s;
 }
 
 .play-container-unlock {
   bottom: -49px;
+  transition-duration: .6s;
 }
 
 .fun-btn {

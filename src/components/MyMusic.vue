@@ -94,7 +94,7 @@
                   <th>时长</th>
                   <th>歌手</th>
                 </tr>
-                <tr v-for="(item, i) in music_list" :key="i">
+                <tr v-for="(item, i) in play_list" :key="i">
                   <td>{{ item.num }}</td>
                   <td>{{ item.name }}</td>
                   <td>{{ item.time }}</td>
@@ -156,6 +156,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+//最外层容器
 .outer-box {
   width: 100%;
   height: calc(100% - 60px);
@@ -199,7 +200,7 @@ export default {
     background-color: #ffffff;
   }
 }
-
+//列表标题
 .fun-title {
   text-decoration: none;
   display: block;
@@ -219,7 +220,7 @@ export default {
 .my-video:hover {
   background-color: #eeeeee;
 }
-
+//列表头部
 .list-header {
   height: 35px;
   line-height: 35px;
@@ -227,7 +228,6 @@ export default {
   cursor: pointer;
 
   .arrow {
-    height: 10px;
     width: 10px;
     border-width: 7px;
     border-color: transparent transparent transparent #aaaaaa;
@@ -239,27 +239,27 @@ export default {
   }
 
   .arrow-rotate {
-    transform: translateY(-25%) rotateZ(90deg);
+    transform: translateX(-25%) rotateZ(90deg);
   }
 
   .create-list {
-    width: 60px;
-    height: 25px;
+    width: 55px;
+    height: 22px;
     position: absolute;
     top: 0;
     bottom: 0;
     margin: auto;
     right: 10px;
-    line-height: 25px;
+    line-height: 22px;
     border: 1px solid #aaaaaa;
     border-radius: 5px;
     display: flex;
     justify-content: space-evenly;
     background: linear-gradient(#ffffff, #ebebeb);
+    font-size: 14px;
 
     span {
       color: #337ab7;
-      font-size: 18px;
     }
   }
 
@@ -267,7 +267,7 @@ export default {
     background: white;
   }
 }
-
+//左侧歌单列表
 .list {
   li {
     padding: 5px 0;
@@ -307,6 +307,7 @@ export default {
   }
 }
 
+//正方形容器
 .img-container {
   width: 18%;
   height: 0;
@@ -319,7 +320,7 @@ export default {
     position: absolute;
   }
 }
-
+//右侧容器
 .content-box {
   .header {
     display: flex;
@@ -364,7 +365,7 @@ export default {
     padding-bottom: 30%;
   }
 }
-
+//歌曲表格
 .music-box {
   padding: 0 40px;
 
@@ -372,6 +373,7 @@ export default {
     table {
       width: 100%;
       border: 1px solid rgba(28, 28, 28, 0.3);
+      border-collapse: collapse;
 
       th,
       td {
