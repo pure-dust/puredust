@@ -120,7 +120,11 @@ export default {
         }
       })
         .then(res => {
-          console.log(res.data)
+          if (res.data === "err") {
+          } else {
+            this.$store.dispatch('setUserInfo', res.data)
+            this.ifLogin = true;
+          } 
         })
         .catch(err => {
           console.error(err);
