@@ -1,23 +1,31 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+
+import FindMusic from '../components/FindMusic.vue'
+import Friends from '../components/Friends.vue'
+import Musician from '../components/Musician.vue'
+import MyMusic from '../components/MyMusic.vue'
+import Recommend from '../components/FindMusicSub/Recommend.vue'
+import PlayList from '../components/FindMusicSub/PlayList.vue'
+import TopList from '../components/FindMusicSub/TopList.vue'
+import Artist from '../components/FindMusicSub/Artist.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+  { path: '/', component: FindMusic, children: [{ path: '/', component: Recommend }] },
+  { path: '/findmusic', component: FindMusic, 
+      children: [
+        { path: '/findmusic', component: Recommend },
+        { path: 'recommend', component: Recommend },
+        { path: 'toplist', component: TopList, children: [
+          { path: 'toplist:id', component :TopList }
+        ]},
+        { path: 'playlist', component: PlayList },
+        { path: 'artist', component: Artist }] },
+  { path: '/friends', component: Friends},
+  { path: '/musician', component: Musician},
+  { path: '/my', component: MyMusic}
 ]
 
 const router = new VueRouter({
