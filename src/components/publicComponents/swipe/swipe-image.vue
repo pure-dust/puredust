@@ -28,7 +28,7 @@ export default {
   methods: {
     rotate() {
       let temp = this.$refs.img
-      temp.style.backgroundImage = 'url(http://127.0.0.1:5050/' + this.list[0] + ')'
+      temp.style.backgroundImage = this.list[0]
 
       if (this.clock != null) return;
       else {
@@ -37,7 +37,7 @@ export default {
           else {
             this.currentId++;
           }
-            temp.style.backgroundImage = 'url(http://127.0.0.1:5050/' + this.list[this.currentId] + ')'
+            temp.style.backgroundImage = this.list[this.currentId]
         }, this.time);
       }
     }
