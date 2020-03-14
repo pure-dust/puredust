@@ -13,7 +13,7 @@
               @click="spread_flag_1 = !spread_flag_1"
               class="fun-title"
             >创建的歌单</span>
-            <div class="create-list">
+            <div class="create-list" @click="createPanel">
               <span>+</span>
               <p>新建</p>
             </div>
@@ -31,7 +31,7 @@
               </div>
               <div class="intro">
                 <p>{{ item.name }}</p>
-                <p>{{ item.number }}首</p>
+                <p>{{ play_list.length }}首</p>
               </div>
             </li>
           </ul>
@@ -47,7 +47,7 @@
           </div>
           <ul class="list" v-show="spread_flag_2">
             <li
-              v-for="(item, i) in play_list"
+              v-for="(item, i) in collected_list"
               :key="i"
               :data-index="i"
               @click="getMusic(2,item.url, $event)"
@@ -106,6 +106,23 @@
         </div>
       </div>
     </div>
+    <div class="create-panel" v-show="create_list_flag">
+      <div class="create-header">
+        <p>新建歌单</p>
+        <span class="close" @click="createPanel"></span>
+      </div>
+      <div class="create-content">
+        <label for="name">
+          歌单名:
+          <input type="text" id="name" autocomplete="off" ref="list_name" />
+        </label>
+        <div class="btn-box">
+          <input type="button" value="创建" class="btn-create" @click="createList" />
+          <input type="button" value="取消" class="btn-cancel" @click="createPanel" />
+        </div>
+      </div>
+    </div>
+    <div class="cover-panel" v-show="create_list_flag"></div>
   </div>
 </template>
 
@@ -118,7 +135,9 @@ export default {
       select_index_1: 0,
       select_index_2: "",
       hover_index: "",
-      play_list: []
+      play_list: [],
+      collected_list: [],
+      create_list_flag: false
     };
   },
   methods: {
@@ -145,12 +164,68 @@ export default {
         this.select_index_2 = event.currentTarget.dataset.index;
         this.select_index_1 = -1;
       }
+    },
+    createPanel() {
+      this.create_list_flag = !this.create_list_flag;
+    },
+    createList() {
+      let name = this.$refs.list_name.value;
+      let user_id = this.$store.getters.getUserInfo.id;
+      this.axios({
+        method: "post",
+        url: "api/users/addplaylist",
+        data: {
+          userId: user_id,
+          listName: name
+        }
+      })
+        .then(res => {
+          if (res.data === "success") {
+            this.create_list_flag = !this.create_list_flag;
+            this.getPlayList()
+          }
+          else {
+            console.log(res.data);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getPlayList() {
+      let user_id = this.$store.getters.getUserInfo.id;
+      this.axios({
+        method: "get",
+        url: "api/users/getplaylist",
+        params: {
+          userId: user_id
+        }
+      })
+        .then(res => {
+          this.play_list = res.data
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getCollectionList() {
+      let user_id = this.$store.getters.getUserInfo.id;
+      this.axios({
+        method: "get",
+        url: "api/users/getcollectedlist",
+        params: {
+          userId: user_id
+        }
+      }).then(res => {
+        this.collected_list = res.data
+      }).catch(err => {
+        console.log(err)
+      });
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init();
-    });
+    this.getPlayList();
+    this.getCollectionList();
   }
 };
 </script>
@@ -256,10 +331,13 @@ export default {
     display: flex;
     justify-content: space-evenly;
     background: linear-gradient(#ffffff, #ebebeb);
-    font-size: 14px;
+    font-size: 12px;
+    box-sizing: content-box;
 
     span {
       color: #337ab7;
+      font-weight: 900;
+      font-size: 16px;
     }
   }
 
@@ -418,5 +496,131 @@ export default {
       }
     }
   }
+}
+
+//创建歌单页
+.create-panel {
+  position: fixed;
+  top: 200px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 450px;
+  height: 200px;
+  border-radius: 3px;
+  overflow: hidden;
+  z-index: 1000;
+  box-shadow: 0 0 10px #282828;
+  cursor: default;
+
+  .create-header {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 10px;
+    background: #282828;
+    color: white;
+    display: flex;
+    align-items: center;
+
+    .close {
+      width: 10px;
+      height: 10px;
+      margin-left: auto;
+      cursor: pointer;
+    }
+
+    .close::before {
+      content: "";
+      display: block;
+      width: 20px;
+      height: 3px;
+      border-radius: 3px;
+      background: white;
+      transform: translateY(50%) translateX(-50%) rotateZ(45deg);
+    }
+
+    .close::after {
+      content: "";
+      display: block;
+      width: 20px;
+      height: 3px;
+      border-radius: 3px;
+      background: white;
+      transform: translateY(-50%) translateX(-50%) rotateZ(-45deg);
+    }
+  }
+
+  .create-content {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    text-align: center;
+    padding: 40px;
+  }
+
+  #name {
+    width: 300px;
+    height: 35px;
+    outline: none;
+    padding: 5px 10px;
+    border-radius: 2px;
+    border: 1px solid #bbbbbb;
+  }
+
+  .btn-box {
+    width: 100%;
+    height: 35px;
+    margin-top: 20px;
+    display: flex;
+    padding: 0 20%;
+    justify-content: space-around;
+
+    input {
+      height: 30px;
+      line-height: 30px;
+      width: 70px;
+      border-radius: 5px;
+      border: 1px solid #bbbbbb;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-create {
+      background: linear-gradient(#85bdee, #337ab7);
+      color: white;
+    }
+
+    .btn-create:hover {
+      background: linear-gradient(#92c9fa, #4d91cc);
+    }
+
+    .btn-create:active {
+      background: linear-gradient(#337ab7, #72b1e9);
+    }
+
+    .btn-cancel {
+      background: linear-gradient(#ffffff, #eeeeee);
+    }
+
+    .btn-cancel:hover {
+      background: linear-gradient(#ffffff, #ffffff);
+    }
+
+    .btn-cancel:active {
+      background: linear-gradient(#eeeeee, #ffffff);
+    }
+  }
+}
+
+.cover-panel {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 </style>

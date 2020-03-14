@@ -30,7 +30,6 @@ export default {
   },
   methods: {
     rotate() {
-      console.log(this.list);
       this.currentimg = this.list[0];
       if (this.clock != null) return;
       else {

@@ -113,8 +113,9 @@ export default {
     login() {
       let name = this.$refs.username.value;
       let pwd = this.$refs.pwd.value;
-      this.axios("api/users/user", {
+      this.axios({
         method: "GET",
+        url: "api/users/user",
         params: {
           name: name,
           pwd: pwd
@@ -127,6 +128,11 @@ export default {
             this.user_info = res.data;
             this.ifLogin = true;
             this.loginFlag = false;
+            localStorage.clear()
+            this.$store.commit('setUesrId', res.data.id)
+            this.$store.commit('setUserName', res.data.name)
+            this.$store.commit('setUserImage', res.data.head_portrait)
+            this.$store.commit('setLoginState', this.ifLogin)
           }
         })
         .catch(err => {
@@ -144,7 +150,11 @@ export default {
       this.selected_index = event.currentTarget.dataset.index;
     }
   },
-  created() {},
+  created() {
+    this.ifLogin = this.$store.getters.getLoginState
+    if(this.ifLogin)
+      this.user_info = this.$store.getters.getUserInfo
+  },
   mounted() {
     this.init();
   }
@@ -152,7 +162,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.main_content {
+.main-content {
   width: 100%;
   height: 100%;
 }
