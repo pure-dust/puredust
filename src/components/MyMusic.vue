@@ -125,7 +125,6 @@
     <div class="cover-panel" v-show="create_list_flag"></div>
   </div>
 </template>
-
 <script>
 export default {
   data() {

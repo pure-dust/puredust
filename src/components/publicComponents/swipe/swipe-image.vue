@@ -11,7 +11,6 @@
     </div>
     <div class="control">
       <div :class="(i==currentId)?'checked':'point'" v-for="(item, i) in list" :key="i"></div>
-      <!-- <div :class="'point'" v-for="(item, i) in list" :key="i"></div> -->
     </div>
   </div>
 </template>x`xx`
@@ -30,23 +29,23 @@ export default {
   },
   methods: {
     rotate() {
-      this.currentimg = this.list[0];
+      this.currentimg = this.image[0];
       if (this.clock != null) return;
       else {
         this.clock = setInterval(() => {
-          if (this.currentId == this.list.length - 1) this.currentId = 0;
+          if (this.currentId == this.image.length - 1) this.currentId = 0;
           else {
             this.currentId++;
           }
-          this.currentimg = this.list[this.currentId];
+          this.currentimg = this.image[this.currentId];
         }, this.time);
       }
     }
   },
-  created() {
+  created() {},
+  mounted() {
     this.rotate();
   },
-  mounted() {},
   props: {
     image: {
       type: Array,

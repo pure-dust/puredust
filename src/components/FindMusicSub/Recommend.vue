@@ -1,7 +1,7 @@
 <template>
   <div class="content-box">
     <div class="rotationChart">
-      <swipe :auto="4000" :image="rotationChartData"></swipe>
+      <swipe :auto="4000" :image="rotationChartData" v-if="rotationChartData.length > 0"></swipe>
     </div>
     <div class="main-content">
       <div class="border-line">
@@ -38,7 +38,7 @@
             </div>
             <div class="music-list">
               <div class="music-container">
-                <div class="left-move-arrow" @click="list_move('left', $event)"></div>
+                <div class="left move-arrow" @click="list_move('left', $event)"></div>
                 <div class="list-container">
                   <ul ref="move_list1">
                     <li v-for="(item ,i) in song_list_1" :key="i" class="detail-container">
@@ -89,7 +89,7 @@
                     </li>
                   </ul>
                 </div>
-                <div class="right-move-arrow" @click="list_move('right', $event)"></div>
+                <div class="right move-arrow" @click="list_move('right', $event)"></div>
               </div>
             </div>
           </div>
@@ -248,8 +248,7 @@ export default {
         url: "api/users/rotation"
       })
         .then(res => {
-          for (let i = 0; i < res.data.length; i++)
-            this.rotationChartData[i] = res.data[i].data;
+          this.rotationChartData = res.data;
         })
         .catch(err => {
           console.log(err);
@@ -596,26 +595,23 @@ export default {
     height: 180px;
     padding: 0 10px;
 
-    .left-move-arrow {
+    .move-arrow {
       height: 15px;
       width: 15px;
       border-width: 5px;
-      border-color: transparent transparent #aaaaaa #aaaaaa;
       border-style: solid;
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
       align-self: center;
+      cursor: pointer;
     }
 
-    .right-move-arrow {
-      height: 15px;
-      width: 15px;
-      border-width: 5px;
+    .left {
+      border-color: transparent transparent #aaaaaa #aaaaaa;
+    }
+
+    .right {
       border-color: #aaaaaa #aaaaaa transparent transparent;
-      border-style: solid;
-      -webkit-transform: rotate(45deg);
-      transform: rotate(45deg);
-      align-self: center;
     }
 
     .list-container {
@@ -883,6 +879,19 @@ export default {
         rgba(51, 122, 183, 1)
       );
       color: white;
+      cursor: pointer;
+      outline: none;
+    }
+
+    button:hover {
+      background: linear-gradient(rgba(61, 145, 218, 0.5), rgb(59, 140, 211));
+    }
+
+    button:active {
+      background: linear-gradient(
+        rgba(51, 122, 183, 0.5),
+        rgba(51, 122, 183, 1)
+      );
     }
   }
 }
@@ -903,7 +912,7 @@ export default {
 
     a {
       color: gray;
-      font-size: 12px;;
+      font-size: 12px;
     }
   }
 
