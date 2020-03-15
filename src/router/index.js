@@ -6,9 +6,12 @@ import Friends from '../components/Friends.vue'
 import Musician from '../components/Musician.vue'
 import MyMusic from '../components/MyMusic.vue'
 import Recommend from '../components/FindMusicSub/Recommend.vue'
-import PlayList from '../components/FindMusicSub/PlayList.vue'
+import FindPlayList from '../components/FindMusicSub/PlayList.vue'
 import TopList from '../components/FindMusicSub/TopList.vue'
 import Artist from '../components/FindMusicSub/Artist.vue'
+import UserInfo from '../components/UserInfo.vue'
+import PlayList from '../components/PlayList.vue'
+import Music from '../components/Music.vue'
 
 Vue.use(VueRouter)
 
@@ -21,14 +24,17 @@ const routes = [
         { path: 'toplist', component: TopList, children: [
           { path: 'toplist:id', component :TopList }
         ]},
-        { path: 'playlist', component: PlayList },
+        { path: 'playlist', component: FindPlayList },
         { path: 'artist', component: Artist }] },
   { path: '/friends', component: Friends},
   { path: '/musician', component: Musician},
-  { path: '/my', component: MyMusic}
+  { path: '/my', component: MyMusic},
+  { path: '/user/home', component: UserInfo },
+  { path: '/playlist', component: PlayList },
+  { path: '/song', component: Music }
 ]
 
-const router = new VueRouter({
+const router = new VueRouter({  
   routes
 })
 

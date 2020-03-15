@@ -5,7 +5,7 @@
         <div class="list-menu" v-for="(item,i) in list_menu" :key="i">
           <div class="list-title">{{ item.title }}</div>
           <ul v-for="(item_1, i_1) in item.content" :key="i_1" class="menu-box">
-            <a :href="item_1.url" @click="getData(item_1.url)">
+            <router-link :to="{path: '/findmusic/toplist', query:{id: item_1.url}}" @click="getData(item_1.url)">
               <li class="item-box">
                 <div class="img-container">
                   <img :src="item_1.img_url" alt class="list-item" />
@@ -15,7 +15,7 @@
                   <p>{{ item_1.intro }}</p>
                 </div>
               </li>
-            </a>
+            </router-link>
           </ul>
         </div>
       </div>
@@ -40,7 +40,7 @@
         </div>
         <div class="music-box">
           <div class="music-intro">
-            <h3>歌曲列表</h3>
+            <p>歌曲列表</p>
           </div>
           <div class="music-content">
             <table>
@@ -51,10 +51,10 @@
                 <th>歌手</th>
               </tr>
               <tr v-for="(item, i) in music_list" :key="i">
-                <td>{{ item.num }}</td>
-                <td>{{ item.name }}</td>
+                <td>{{ i+1 }}</td>
+                <td> <router-link :to="{path: '/song', query:{id: item.music_id}}"> {{ item.name }} </router-link> </td>
                 <td>{{ item.time }}</td>
-                <td>{{ item.singer }}</td>
+                <td><router-link :to="{path: '/findmusic/artist', query:{id: item.singer_id}}"> {{ item.singer }} </router-link></td>
               </tr>
             </table>
           </div>
@@ -69,8 +69,8 @@ export default {
   data() {
     return {
       list_menu: [],
-      title: "",
-      intro: "",
+      title: 1,
+      intro: 1,
       music_list: [],
       comment: []
     };
@@ -85,25 +85,25 @@ export default {
               name: " 尘心音乐飙升榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: "/#/findmusic/toplist?id=1"
+              url: 1
             },
             {
               name: " 尘心音乐新歌榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: "/#/findmusic/toplist?id=2"
+              url: 2
             },
             {
               name: "尘心原创歌曲榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: "/#/findmusic/toplist?id=3"
+              url: 3
             },
             {
               name: " 尘心音乐热歌榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: "/#/findmusic/toplist?id=4"
+              url: 4
             }
           ]
         },
@@ -114,25 +114,25 @@ export default {
               name: " 尘心音乐飙升榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 5
             },
             {
               name: " 尘心音乐新歌榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 6
             },
             {
               name: "尘心原创歌曲榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 7
             },
             {
               name: " 尘心音乐热歌榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 8
             }
           ]
         },
@@ -143,25 +143,25 @@ export default {
               name: " 尘心音乐飙升榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 9
             },
             {
               name: " 尘心音乐新歌榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 10
             },
             {
               name: "尘心原创歌曲榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 11
             },
             {
               name: " 尘心音乐热歌榜",
               intro: "每天更新",
               img_url: "static/1.png",
-              url: ""
+              url: 12
             }
           ]
         }
@@ -315,6 +315,7 @@ export default {
 
     a {
       text-decoration: none;
+      color: rgb(28, 28, 28);
     }
 
     .item-box {
@@ -365,7 +366,7 @@ export default {
       }
 
       .intro {
-        color: darkgray;
+        color: darkgray;  
       }
 
       .fun {
@@ -393,7 +394,13 @@ export default {
 .music-box {
   padding: 0 40px;
 
+  .music-intro {
+    margin-bottom: 5px;
+    font-size: 20px;
+  }
+
   .music-content {
+    border-top: 2px solid #337ab7;
     table {
       width: 100%;
       border: 1px solid rgba(28, 28, 28, 0.3);
@@ -402,15 +409,28 @@ export default {
       th,
       td {
         font-weight: normal;
-        color: darkgray;
+        color: rgba(28, 28, 28, 0.8);
         height: 30px;
         line-height: 30px;
         padding-left: 5px;
+        font-size: 12px;
+
+        a {
+          color: rgba(28, 28, 28, 0.8);
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
       }
 
       th {
         background: linear-gradient(rgb(255, 255, 255), rgb(235, 235, 235));
         border: 1px solid rgba(28, 28, 28, 0.3);
+        text-align: left;
+        color: rgba(28, 28, 28, 0.8);
+        box-shadow: 0 1px 2px #aaaaaa;
+        box-sizing: content-box;
       }
 
       tr:nth-child(odd) {
@@ -418,7 +438,7 @@ export default {
       }
 
       tr:nth-child(even) {
-        background-color: rgba(230, 230, 230, 0.6);
+        background-color: rgba(230, 230, 230, 0.3);
       }
 
       td {
@@ -429,6 +449,7 @@ export default {
       td:nth-child(1),
       th:nth-child(1) {
         width: 10%;
+        padding-left: 3%;
       }
 
       td:nth-child(2),

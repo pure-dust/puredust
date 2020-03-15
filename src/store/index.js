@@ -75,6 +75,11 @@ export default new Vuex.Store({
     setLoginState(state, flag) {
       state.loginFlag = flag
       window.localStorage.setItem('login_flag', flag)
+    },
+    infoInit(state) {
+      state.user_info = {}
+      state.music = {}
+      state.userMusicList = []
     }
   },
   modules: {}

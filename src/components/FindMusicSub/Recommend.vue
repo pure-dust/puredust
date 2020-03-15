@@ -20,12 +20,19 @@
             <div class="song-sheet">
               <div v-for="(item, i) in music_list" :key="i" class="detail-container">
                 <div class="img-container">
-                  <a :href="item.url" :title="item.title" class="link">
+                  <router-link
+                    :to="{path: '/playlist', query:{id: item.id}}"
+                    :title="item.title"
+                    class="link"
+                  >
                     <img :src="item.music_album" alt class="list-item" />
-                  </a>
+                  </router-link>
                 </div>
                 <div class="bottom">
-                  <a :href="item.url" :title="item.title">{{ item.title }}</a>
+                  <router-link
+                    :to="{path: '/playlist', query:{id: item.id}}"
+                    :title="item.title"
+                  >{{ item.title }}</router-link>
                 </div>
               </div>
             </div>
@@ -43,48 +50,76 @@
                   <ul ref="move_list1">
                     <li v-for="(item ,i) in song_list_1" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.music_name" class="link">
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.music_name"
+                          class="link"
+                        >
                           <img :src="item.music_album" alt class="list-item" />
-                        </a>
+                        </router-link>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.title">{{ item.music_name }}</a>
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.title"
+                        >{{ item.music_name }}</router-link>
                       </div>
                     </li>
                   </ul>
                   <ul ref="move_list2">
                     <li v-for="(item ,i) in song_list_2" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.title" class="link">
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.music_name"
+                          class="link"
+                        >
                           <img :src="item.music_album" alt class="list-item" />
-                        </a>
+                        </router-link>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.title">{{ item.music_name }}</a>
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.title"
+                        >{{ item.music_name }}</router-link>
                       </div>
                     </li>
                   </ul>
                   <ul ref="move_list3">
                     <li v-for="(item ,i) in song_list_1" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.music_name" class="link">
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.music_name"
+                          class="link"
+                        >
                           <img :src="item.music_album" alt class="list-item" />
-                        </a>
+                        </router-link>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.music_name">{{ item.music_name }}</a>
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.title"
+                        >{{ item.music_name }}</router-link>
                       </div>
                     </li>
                   </ul>
                   <ul ref="move_list4">
                     <li v-for="(item ,i) in song_list_2" :key="i" class="detail-container">
                       <div class="img-container">
-                        <a :href="item.url" :title="item.music_name" class="link">
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.music_name"
+                          class="link"
+                        >
                           <img :src="item.music_album" alt class="list-item" />
-                        </a>
+                        </router-link>
                       </div>
                       <div class="bottom">
-                        <a :href="item.url" :title="item.music_name">{{ item.music_name }}</a>
+                        <router-link
+                          :to="{path: '/song', query: {id: item.music_id}}"
+                          :title="item.title"
+                        >{{ item.music_name }}</router-link>
                       </div>
                     </li>
                   </ul>
@@ -105,7 +140,7 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="static/1.png" alt class="list-item" />
+                        <img src="public/1.png" alt class="list-item" />
                       </a>
                     </div>
                   </div>
@@ -120,7 +155,9 @@
                 <ul>
                   <li v-for="(item, i) in ranking_list[0]" :key="i">
                     <span>{{ i+1 }}</span>
-                    <a :href="item.play_url">{{ item.name }}</a>
+                    <router-link
+                      :to="{path: '/song', query:{id: item.music_id}}"
+                    >{{ item.music_name }}</router-link>
                   </li>
                 </ul>
                 <div class="all-ranking">
@@ -132,7 +169,7 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="static/1.png" alt class="list-item" />
+                        <img src="public/1.png" alt class="list-item" />
                       </a>
                     </div>
                   </div>
@@ -147,7 +184,9 @@
                 <ul>
                   <li v-for="(item, i) in ranking_list[0]" :key="i">
                     <span>{{ i+1 }}</span>
-                    <a :href="item.play_url">{{ item.name }}</a>
+                    <router-link
+                      :to="{path: '/song', query:{id: item.music_id}}"
+                    >{{ item.music_name }}</router-link>
                   </li>
                 </ul>
                 <div class="all-ranking">
@@ -159,7 +198,7 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="static/1.png" alt class="list-item" />
+                        <img src="public/1.png" alt class="list-item" />
                       </a>
                     </div>
                   </div>
@@ -174,7 +213,9 @@
                 <ul>
                   <li v-for="(item, i) in ranking_list[0]" :key="i">
                     <span>{{ i+1 }}</span>
-                    <a :href="item.play_url">{{ item.name }}</a>
+                    <router-link
+                      :to="{path: '/song', query:{id: item.music_id}}"
+                    >{{ item.music_name }}</router-link>
                   </li>
                 </ul>
                 <div class="all-ranking">
@@ -202,12 +243,12 @@
                 <a :href="item.url" class="content-box">
                   <div class="detail-container">
                     <div class="img-container">
-                      <img :src="item.image" alt class="list-item" />
+                      <img :src="item.head_portrait" alt class="list-item" />
                     </div>
                   </div>
                   <div class="singer-detail">
                     <div class="singer-name">{{ item.name }}</div>
-                    <div class="singer-intro">{{ item.title }}</div>
+                    <div class="singer-intro">{{ item.intro }}</div>
                   </div>
                 </a>
               </li>
@@ -282,9 +323,11 @@ export default {
     getRankingList() {
       this.axios({
         methods: "GET",
-        url: "api/users/rangkinglist"
+        url: "api/users/getrankinglist"
       })
-        .then(res => {})
+        .then(res => {
+          this.ranking_list = res.data;
+        })
         .catch(err => {
           console.log(err);
         });
@@ -294,175 +337,12 @@ export default {
         methods: "GET",
         url: "api/users/musician"
       })
-        .then(res => {})
+        .then(res => {
+          this.musician = res.data
+        })
         .catch(err => {
           console.log(err);
         });
-    },
-    init() {
-      this.recommend_menu = ["华语", "流行", "摇滚", "民谣", "电子"];
-      this.getMusicList();
-      this.getSongList();
-      this.ranking_list = [
-        [
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          }
-        ],
-        [
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          }
-        ],
-        [
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          },
-          {
-            name: "有没有那么一首歌",
-            play_url: "javascript:;"
-          }
-        ]
-      ];
-      this.musician = [
-        {
-          image: "static/1.png",
-          url: "",
-          title: "this is title",
-          name: "周华健"
-        },
-        {
-          image: "static/1.png",
-          url: "",
-          title: "this is title",
-          name: "周华健"
-        },
-        {
-          image: "static/1.png",
-          url: "",
-          title: "this is title",
-          name: "周华健"
-        },
-        {
-          image: "static/1.png",
-          url: "",
-          title: "this is title",
-          name: "周华健"
-        },
-        {
-          image: "static/1.png",
-          url: "",
-          title: "this is title",
-          name: "周华健"
-        }
-      ];
     },
     move_action(list_1, list_2, list_3, list_4, direction) {
       if (direction == "left") {
@@ -523,6 +403,8 @@ export default {
     this.getRotation();
     this.getMusicList();
     this.getSongList();
+    this.getRankingList();
+    this.getMusician();
   },
   mounted() {
     let list1 = this.$refs.move_list1;
@@ -708,6 +590,7 @@ export default {
         a {
           font-weight: normal;
           font-size: 14px;
+          padding-left: 10px;
         }
       }
       li:nth-child(odd) {
