@@ -44,15 +44,14 @@ export default new Vuex.Store({
     },
     getLoginState: state => {
       return state.loginFlag
+    },
+    getMusic: state => {
+      return state.music
     }
   },
   mutations: {
-    setMusic(state, payload) {
-      state.music.id = payload.music.music_id
-      state.music.name = payload.music.music_name
-      state.music.singer = payload.music.music_singer
-      state.music.data = payload.music.music_data
-      state.music.album = payload.music.music_album
+    setMusic(state, music) {
+      state.music = music
     },
     setUserMusicList(list) {},
     setUserInfo(state, info) {

@@ -1,24 +1,29 @@
 <template>
-  <div class="play-container" :class="{'play-container-lock': hiddenFlag,'play-container-unlock': !hiddenFlag}">
+  <div
+    class="play-container"
+    :class="{'play-container-lock': hiddenFlag,'play-container-unlock': !hiddenFlag}"
+    @mouseenter="hidden"
+    @mouseleave="hidden"
+  >
     <div class="play-tool">
       <div class="backward" @click="backward"></div>
-      <div class="play" @click="playOrPause"></div>
+      <div class="play" :class="{ 'pause': !playFlag }" @click="playOrPause"></div>
       <div class="forward" @click="forward"></div>
     </div>
     <div class="play-area">
       <div class="cover-container">
         <div class="img-container">
-          <img :src="music_info.cover" alt />
+          <img :src="music_info.music_cover" alt />
         </div>
       </div>
       <div class="progress-container">
         <div class="lyric">
-          <a href class="song-title">{{ music_info.name }}</a>
-          <a href class="singer">{{ music_info.singer }}</a>
+          <a href class="song-title">{{ music_info.music_name }}</a>
+          <a href class="singer">{{ music_info.music_singer }}</a>
         </div>
         <div class="progress-tool">
           <div class="progress-line" ref="progress_line" @click.self="setTime">
-            <div class="cover-line" ref="cover_line"></div>
+            <div class="cover-line" ref="cover_line" @click.self="setTime"></div>
             <div class="point" @mousedown="move" ref="point"></div>
           </div>
           <div class="song-time">
@@ -33,7 +38,7 @@
       <div class="play-mode"></div>
       <div class="sound"></div>
     </div>
-    <audio :src="music_info.data" ref="audio" loop="loop" @ended="music_init"></audio>
+    <audio :src="music_info.music_data" ref="audio"></audio>
     <div class="hand"></div>
     <i class="fun-btn" @click="hidden"></i>
   </div>
@@ -44,16 +49,9 @@ export default {
   data() {
     return {
       test: {
-        cover: ''
+        cover: ""
       },
-      music_info: {
-        id: '',
-        name: '',
-        singer: '',
-        data: '',
-        album: '',
-        cover: ''
-      },
+      music_info: this.$store.getters.getMusic,
       playFlag: false,
       hiddenFlag: false,
       Time: null,
@@ -62,28 +60,24 @@ export default {
       point: null,
       cover_line: null,
       audio: null,
-      currentTime: 0
+      currentTime: 0,
+      autoFlag: false
     };
   },
   methods: {
+    //初始化播放器
     init() {
-      //获取音乐信息
-      this.music = this.$store.getters.getMusic;
       //初始化组件
-      this.point = this.$refs.point;
-      this.cover_line = this.$refs.cover_line;
-      this.width = this.$refs.progress_line.offsetWidth;
-    },
-    music_init() {
       if (this.name === null) return;
       this.point.style.left = "0";
       this.cover_line.style.width = "0px";
-      this.audio = this.$refs.audio;
       this.audio.load();
       this.audio.oncanplay = () => {
         this.Time = parseInt(this.audio.duration);
+        if (this.autoFlag) this.audio.play();
       };
     },
+    //拖动进度条
     move() {
       let el = event.target;
       var disx = event.pageX - el.offsetLeft;
@@ -99,6 +93,7 @@ export default {
         document.onmousemove = document.onmouseup = null;
       };
     },
+    //点击进度条
     setTime() {
       let el = event.target;
       var disx = event.pageX - event.target.getBoundingClientRect().left;
@@ -107,51 +102,60 @@ export default {
       this.currentTime = this.audio.currentTime =
         (disx / this.width) * this.Time;
     },
-    musicHandler() {
-      let audio = this.$refs.audio;
-    },
+    //播放&暂停
     playOrPause() {
-      this.audio.onended = () => {
-        event.target.style.backgroundPosition = "0 -204px";
-        clearInterval(this.clock);
-        this.music_init();
-      };
       if (!this.playFlag) {
-        event.target.style.backgroundPosition = "0 -165px";
-        this.audio.play();
-        this.clock = setInterval(() => {
-          this.currentTime++;
-          this.point.style.left =
-            (this.currentTime / this.Time) * this.width + "px";
-          this.cover_line.style.width =
-            (this.currentTime / this.Time) * this.width + "px";
-          if (this.currentTime >= this.Time) {
-            clearInterval(this.clock);
-            this.music_init();
-          }
-        }, 1000);
+        this.setProgress();
       } else {
         clearInterval(this.clock);
-        event.target.style.backgroundPosition = "0 -204px";
         this.audio.pause();
       }
       this.playFlag = !this.playFlag;
     },
-    backward() {
-      let audio = this.$refs.audio;
-    },
-    forward() {
-      let audio = this.$refs.audio;
-    },
+    //下一首
+    backward() {},
+    //下一首
+    forward() {},
+    //隐藏播放区域
     hidden() {
       this.hiddenFlag = !this.hiddenFlag;
+    },
+    //初次播放
+    autoPlay() {
+      if (this.clock) clearInterval(this.clock);
+      this.setProgress();
+      this.playFlag = !this.playFlag;
+    },
+    //设置进度条
+    setProgress() {
+      this.clock = setInterval(() => {
+        this.currentTime++;
+        this.point.style.left =
+          (this.currentTime / this.Time) * this.width + "px";
+        this.cover_line.style.width =
+          (this.currentTime / this.Time) * this.width + "px";
+        if (this.currentTime >= this.Time) {
+          this.autoFlag = false
+          this.playFlag = false
+          clearInterval(this.clock);
+          this.init();
+        }
+      }, 1000);
+    },
+    //播放结束事件
+    end() {
+      clearInterval(this.clock);
+      this.autoFlag = false;
+      this.init();
+      // console.log(111)
     }
   },
-
   created() {
-    this.$nextTick(() => {
-      this.init();
-      this.music_init();
+    this.$nextTick(function() {
+      this.point = this.$refs.point;
+      this.cover_line = this.$refs.cover_line;
+      this.width = this.$refs.progress_line.offsetWidth;
+      this.audio = this.$refs.audio;
     });
   },
   filters: {
@@ -165,6 +169,14 @@ export default {
           return parseInt(length / 60) + ":0" + parseInt(length % 60);
         else return parseInt(length / 60) + ":" + parseInt(length % 60);
       }
+    }
+  },
+  watch: {
+    "$store.state.music": function() {
+      this.music_info = this.$store.getters.getMusic;
+      this.autoFlag = true;
+      this.init();
+      this.autoPlay();
     }
   }
 };
@@ -198,8 +210,12 @@ export default {
       height: 36px;
       width: 36px;
       background: url(/assets/image/playbar.png) no-repeat;
-      background-position: 0 -204px;
+      background-position: 0 -165px;
       align-self: center;
+    }
+
+    .pause {
+      background-position: 0 -204px;
     }
 
     .forward {
@@ -344,12 +360,13 @@ export default {
 
 .play-container:hover {
   bottom: 0px;
-  transition-duration: .2s;
+  transition-duration: 0.2s;
 }
 
 .play-container-unlock {
   bottom: -49px;
-  transition-duration: .6s;
+  transition-duration: 0.6s;
+  transition-delay: 0.5s;
 }
 
 .fun-btn {
