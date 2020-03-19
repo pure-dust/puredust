@@ -69,6 +69,7 @@ export default {
     init() {
       //初始化组件
       if (this.name === null) return;
+      this.currentTime = 0;
       this.point.style.left = "0";
       this.cover_line.style.width = "0px";
       this.audio.load();

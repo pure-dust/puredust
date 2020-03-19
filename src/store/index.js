@@ -19,6 +19,7 @@ export default new Vuex.Store({
       cover: null
     },
     userMusicList: [],
+    userCollectedList: [],
     loginFlag: window.localStorage.getItem('login_flag') || false
   },
   actions: {
@@ -39,21 +40,26 @@ export default new Vuex.Store({
     getUserMusicList: state => {
       return state.userMusicList
     },
+    getUserCollectedList: state => {
+      return state.userCollectedList
+    },
     getUserInfo: state => {
       return state.user_info
     },
     getLoginState: state => {
       return state.loginFlag
-    },
-    getMusic: state => {
-      return state.music
     }
   },
   mutations: {
     setMusic(state, music) {
       state.music = music
     },
-    setUserMusicList(list) {},
+    setUserMusicList(state, list) {
+      state.userMusicList = list
+    },
+    setUserCollectedList(state, list) {
+      state.userCollectedList = list
+    },
     setUserInfo(state, info) {
       state.user_info.id = info.id,
         state.user_info.name = info.name,
@@ -78,7 +84,9 @@ export default new Vuex.Store({
     infoInit(state) {
       state.user_info = {}
       state.music = {}
-      state.userMusicList = []
+      state.userMusicList = [],
+      state.userCollectedList = [],
+      this.loginFlag = false
     }
   },
   modules: {}

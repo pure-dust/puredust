@@ -82,7 +82,7 @@
       <div class="login-page" v-if="loginFlag">
         <div class="login-header">
           <span class="login-title">登录</span>
-          <span class="close" @click="closeLogin"></span>
+          <span class="close" @click="openLogin"></span>
         </div>
         <div class="input-container">
           <label for="username">账号</label>
@@ -100,13 +100,18 @@
       </div>
       <div class="shelter" v-if="loginFlag"></div>
     </div>
-    <router-view></router-view>
+    <router-view v-if="isRouterAlive"></router-view>
     <music-play class="music-play"></music-play>
   </div>
 </template>
 
 <script>
 export default {
+  provide() {
+    return {
+      reload: this.reload
+    };
+  },
   data() {
     return {
       user_info: {},
@@ -114,15 +119,13 @@ export default {
       ifLogin: false,
       ifshowUserPanel: false,
       image: "",
-      selected_index: 1
+      selected_index: this.$cookies.get("menu_index") || 1,
+      isRouterAlive: true
     };
   },
   methods: {
     openLogin() {
-      this.loginFlag = true;
-    },
-    closeLogin() {
-      this.loginFlag = false;
+      this.loginFlag = !this.loginFlag;
     },
     login() {
       let name = this.$refs.username.value;
@@ -136,7 +139,9 @@ export default {
         }
       })
         .then(res => {
-          if (res.data === "err") {
+          if (res.data == "err") {
+            console.log(this.$Toast);
+            this.$Toast({ message: "用户名或密码错误", time: 3000 });
           } else {
             this.$store.dispatch("setUserInfo", res.data);
             this.user_info = res.data;
@@ -147,6 +152,8 @@ export default {
             this.$store.commit("setUserName", res.data.name);
             this.$store.commit("setUserImage", res.data.head_portrait);
             this.$store.commit("setLoginState", this.ifLogin);
+            this.getPlayList();
+            this.getCollectionList();
           }
         })
         .catch(err => {
@@ -162,14 +169,57 @@ export default {
     showUserPanel() {
       this.ifshowUserPanel = !this.ifshowUserPanel;
     },
-    getMusic() {},
+    getPlayList() {
+      let user_id = this.$store.getters.getUserInfo.id;
+      this.axios({
+        method: "get",
+        url: "api/users/getplaylist",
+        params: {
+          userId: user_id
+        }
+      })
+        .then(res => {
+          this.$store.commit("setUserMusicList", res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getCollectionList() {
+      let user_id = this.$store.getters.getUserInfo.id;
+      this.axios({
+        method: "get",
+        url: "api/users/getcollectedlist",
+        params: {
+          userId: user_id
+        }
+      })
+        .then(res => {
+          this.$store.commit("setUserCollectedList", res.data);
+          this.collected_list = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     selected(event) {
       this.selected_index = event.currentTarget.dataset.index;
+      this.$cookies.set("menu_index", this.selected_index, 0);
+    },
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(() => {
+        this.isRouterAlive = true;
+      });
     }
   },
   created() {
     this.ifLogin = this.$store.getters.getLoginState;
-    if (this.ifLogin) this.user_info = this.$store.getters.getUserInfo;
+    if (this.ifLogin) {
+      this.user_info = this.$store.getters.getUserInfo;
+      this.getPlayList();
+      this.getCollectionList();
+    }
   }
 };
 </script>
@@ -197,6 +247,12 @@ export default {
     padding: 0 10%;
     align-items: center;
     height: 60px;
+
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .logo {

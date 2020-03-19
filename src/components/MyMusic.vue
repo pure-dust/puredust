@@ -23,11 +23,11 @@
               v-for="(item, i) in play_list"
               :key="i"
               :data-index="i"
-              @click="getMusic(1,item.url, $event)"
+              @click="getMusic(1,item.id, $event)"
               :class="{ 'selection': select_index_1 == i }"
             >
               <div class="img-container">
-                <img :src="item.img" alt class="list-item" />
+                <img :src="item.cover" alt class="list-item" />
               </div>
               <div class="intro">
                 <p>{{ item.name }}</p>
@@ -50,11 +50,11 @@
               v-for="(item, i) in collected_list"
               :key="i"
               :data-index="i"
-              @click="getMusic(2,item.url, $event)"
+              @click="getMusic(2,item.id, $event)"
               :class="{ 'selection': select_index_2 == i }"
             >
               <div class="img-container">
-                <img :src="item.img" alt class="list-item" />
+                <img :src="item.cover" alt class="list-item" />
               </div>
               <div class="intro">
                 <p>{{ item.name }}</p>
@@ -94,11 +94,15 @@
                   <th>时长</th>
                   <th>歌手</th>
                 </tr>
-                <tr v-for="(item, i) in play_list" :key="i">
-                  <td>{{ item.num }}</td>
-                  <td>{{ item.name }}</td>
+                <tr v-for="(item, i) in song_list" :key="i">
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <router-link
+                      :to="{path: '/song', query: {id: item.music_id}}"
+                    >{{ item.music_name }}</router-link>
+                  </td>
                   <td>{{ item.time }}</td>
-                  <td>{{ item.singer }}</td>
+                  <td>{{ item.music_singer }}</td>
                 </tr>
               </table>
             </div>
@@ -127,35 +131,22 @@
 </template>
 <script>
 export default {
+  inject: ["reload"],
   data() {
     return {
-      spread_flag_1: false,
-      spread_flag_2: false,
-      select_index_1: 0,
-      select_index_2: "",
+      spread_flag_1: true,
+      spread_flag_2: true,
+      select_index_1: this.$cookies.get("l_s1") || 0,
+      select_index_2: this.$cookies.get("l_s2") || -1,
       hover_index: "",
       play_list: [],
       collected_list: [],
-      create_list_flag: false
+      create_list_flag: false,
+      song_list: []
     };
   },
   methods: {
-    init() {
-      this.play_list = [
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" },
-        { name: "幻想国度", number: 0, img: "static/1.png", url: "" }
-      ];
-    },
-    getMusic(num, url, event) {
+    getMusic(num, id, event) {
       if (num === 1) {
         this.select_index_1 = event.currentTarget.dataset.index;
         this.select_index_2 = -1;
@@ -163,6 +154,10 @@ export default {
         this.select_index_2 = event.currentTarget.dataset.index;
         this.select_index_1 = -1;
       }
+      this.$cookies.set("l_id", id, 0);
+      this.$cookies.set("l_s1", this.select_index_1, 0);
+      this.$cookies.set("l_s2", this.select_index_2, 0);
+      this.$router.push({ path: "/my/playlist", query: { id: id } });
     },
     createPanel() {
       this.create_list_flag = !this.create_list_flag;
@@ -181,9 +176,8 @@ export default {
         .then(res => {
           if (res.data === "success") {
             this.create_list_flag = !this.create_list_flag;
-            this.getPlayList()
-          }
-          else {
+            this.getPlayList();
+          } else {
             console.log(res.data);
           }
         })
@@ -191,40 +185,63 @@ export default {
           console.log(err);
         });
     },
-    getPlayList() {
-      let user_id = this.$store.getters.getUserInfo.id;
+    getSongList(id) {
       this.axios({
         method: "get",
-        url: "api/users/getplaylist",
+        url: "api/users/getplaylistmusic",
         params: {
-          userId: user_id
+          id: id
         }
       })
         .then(res => {
-          this.play_list = res.data
+          this.song_list = res.data;
         })
         .catch(err => {
           console.log(err);
         });
-    },
-    getCollectionList() {
-      let user_id = this.$store.getters.getUserInfo.id;
-      this.axios({
-        method: "get",
-        url: "api/users/getcollectedlist",
-        params: {
-          userId: user_id
-        }
-      }).then(res => {
-        this.collected_list = res.data
-      }).catch(err => {
-        console.log(err)
-      });
     }
   },
   created() {
-    this.getPlayList();
-    this.getCollectionList();
+    this.play_list = this.$store.getters.getUserMusicList;
+    this.collected_list = this.$store.getters.getUserCollectedList;
+    if (this.$cookies.get("l_id")) {
+      this.getSongList(this.$cookies.get("l_id"));
+    } else {
+      let clock = setInterval(() => {
+        if (this.play_list.length > 0) {
+          this.getSongList(this.play_list[0].id);
+          clearInterval(clock);
+        }
+      });
+    }
+  },
+  computed: {
+    userMusicList() {
+      return this.$store.getters.getUserMusicList;
+    },
+    userCollectedList() {
+      return this.$store.getters.getUserCollectedList;
+    },
+    loginFlag() {
+      return this.$store.getters.getLoginState;
+    },
+    getCurrentId() {
+      return this.$route.query.id;
+    }
+  },
+  watch: {
+    userMusicList(val) {
+      this.play_list = this.$store.getters.getUserMusicList;
+    },
+    userCollectedList(val) {
+      this.collected_list = this.$store.getters.getUserCollectedList;
+    },
+    loginFlag(val) {
+      this.reload();
+    },
+    getCurrentId(val) {
+      this.getSongList(val);
+    }
   }
 };
 </script>
@@ -367,7 +384,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-
     p {
       font-size: 12px;
       margin: 0;
@@ -446,19 +462,32 @@ export default {
 .music-box {
   padding: 0 40px;
 
+  .music-intro {
+    border-bottom: 2px solid #337ab7;
+  }
+
   .music-content {
     table {
       width: 100%;
       border: 1px solid rgba(28, 28, 28, 0.3);
       border-collapse: collapse;
 
+      a {
+        color: #282828;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
       th,
       td {
         font-weight: normal;
-        color: darkgray;
+        color: #282828;
         height: 30px;
         line-height: 30px;
         padding-left: 5px;
+        font-size: 12px;
       }
 
       th {
