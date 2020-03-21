@@ -1,5 +1,5 @@
 <template>
-  <div class="outer-box">
+  <div class="outer-box" ref="out">
     <div class="inner-box">
       <div class="left">
         <div class="my-video">
@@ -214,6 +214,9 @@ export default {
         }
       });
     }
+    this.$nextTick(() => {
+      this.$refs.out.style.height = window.innerHeight - 60 + "px";
+    });
   },
   computed: {
     userMusicList() {
@@ -250,14 +253,14 @@ export default {
 //最外层容器
 .outer-box {
   width: 100%;
-  height: calc(100% - 60px);
   background-color: #f5f5f5;
   padding: 0 13%;
+  overflow: hidden;
 
   .inner-box {
     border: 1px solid lightgray;
     display: flex;
-    height: 100%;
+    height: 100vw;
   }
 
   .left {

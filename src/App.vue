@@ -79,7 +79,7 @@
           </ul>
         </div>
       </div>
-      <div class="login-page" v-if="loginFlag">
+      <div class="e-page" v-if="loginFlag">
         <div class="login-header">
           <span class="login-title">登录</span>
           <span class="close" @click="openLogin"></span>
@@ -95,7 +95,25 @@
 
         <div class="fun-but">
           <input type="button" value="登录" class="login" @click="login" />
-          <input type="button" value="注册" class="register" />
+          <input type="button" value="注册" class="register" @click="openRegister" />
+        </div>
+      </div>
+      <div class="e-page" v-if="r_flag">
+        <div class="login-header">
+          <span class="login-title">登录</span>
+          <span class="close" @click="openLogin"></span>
+        </div>
+        <div class="input-container">
+          <label for="username">账号</label>
+          <input type="text" class="username" id="username" autocomplete="off" ref="r_username" />
+        </div>
+        <div class="input-container">
+          <label for="password">密码</label>
+          <input type="password" class="password" id="password" autocomplete="off" ref="r_pwd" />
+        </div>
+        <div class="fun-but">
+          <input type="button" value="返回" class="login" @click="openRegister" />
+          <input type="button" value="注册" class="register" @click="register" />
         </div>
       </div>
       <div class="shelter" v-if="loginFlag"></div>
@@ -120,12 +138,17 @@ export default {
       ifshowUserPanel: false,
       image: "",
       selected_index: this.$cookies.get("menu_index") || 1,
-      isRouterAlive: true
+      isRouterAlive: true,
+      r_flag: false
     };
   },
   methods: {
     openLogin() {
       this.loginFlag = !this.loginFlag;
+    },
+    openRegister() {
+      this.r_flag = !this.r_flag;
+      this.openLogin();
     },
     login() {
       let name = this.$refs.username.value;
@@ -211,6 +234,30 @@ export default {
       this.$nextTick(() => {
         this.isRouterAlive = true;
       });
+    },
+    beforeUnload() {
+      this.$cookies.remove("l_id");
+      this.$cookies.remove("l_s1");
+      this.$cookies.remove("l_s2");
+      this.$cookies.remove("menu_index");
+    },
+    register() {
+      let name = this.$refs.r_username.value;
+      let pwd = this.$refs.r_pwd.value;
+      this.axios({
+        method: "post",
+        url: "api/users/createaccount",
+        data: {
+          name: name,
+          pwd: pwd
+        }
+      })
+        .then(res => {
+          console.log(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   created() {
@@ -220,6 +267,7 @@ export default {
       this.getPlayList();
       this.getCollectionList();
     }
+    window.onbeforeunload = this.beforeUnload;
   }
 };
 </script>
@@ -308,11 +356,17 @@ export default {
   height: 30px;
   box-sizing: border-box;
   margin: 0 45px;
+  background-image: url(/assets/image/search.png);
+  background-size: 10%;
+  background-repeat: no-repeat;
+  background-position: 90% 50%;
 
   .search {
     border: none;
     width: 70%;
     outline: none;
+    height: 30px;
+    line-height: 30px;
   }
 }
 
@@ -337,10 +391,10 @@ export default {
 }
 
 //登录界面
-.login-page {
+.e-page {
   z-index: 1001;
   width: 20%;
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   top: 30%;

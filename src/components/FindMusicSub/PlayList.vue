@@ -12,18 +12,20 @@
         <div v-for="(item, i) in music_list" :key="i" class="detail-container">
           <div class="img-container">
             <a :href="item.url" :title="item.title" class="link">
-              <img :src="item.imgUrl" alt class="list-item" />
+              <img :src="item.cover" alt class="list-item" />
             </a>
           </div>
           <div class="bottom">
-            <a :href="item.url" :title="item.title">{{ item.title }}</a>
+            <a :href="item.url" :title="item.title">{{ item.name }}</a>
           </div>
         </div>
       </div>
       <div class="toobar">
-        <a href>上一页</a>
-        <div class="page"></div>
-        <a href>下一页</a>
+        <a href="javascript:;" class="btn arrow">&lt; 上一页</a>
+        <div class="page">
+          <a href="javascript:;" class="btn select-item">1</a>
+        </div>
+        <a href="javascript:;" class="btn arrow">下一页 &gt;</a>
       </div>
     </div>
   </div>
@@ -34,7 +36,8 @@ export default {
   data() {
     return {
       list_kinds: [],
-      music_list: []
+      music_list: [],
+      select: []
     };
   },
   methods: {
@@ -47,54 +50,30 @@ export default {
           name: "欧美"
         }
       ];
-      this.music_list = [
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        },
-        {
-          imgUrl: "static/1.png",
-          url: "",
-          title: "this is title"
-        }
-      ];
+    },
+    getAllList() {
+      this.axios({
+        method: "get",
+        url: "api/users/getallplaylist"
+      })
+        .then(res => {
+          this.music_list = res.data;
+          for (let i = 0; i < this.music_list.length; i++) {
+            this.select[i] = {
+              num: i + 1,
+              id: this.music_list[i].id
+            };
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init();
-    });
+    this.init();
+    this.getAllList();
+    
   }
 };
 </script>
@@ -102,13 +81,14 @@ export default {
 <style lang="less" scoped>
 .outer-box {
   width: 100%;
-  height: 100%;
+  height: auto;
   padding: 0 13%;
   background-color: #f5f5f5;
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
 
   .inner-box {
     padding: 40px;
+    height: 100%;
     background-color: white;
     border-left: 1px solid rgba(28, 28, 28, 0.3);
     border-right: 1px solid rgba(28, 28, 28, 0.3);
@@ -129,10 +109,13 @@ export default {
   .kinds {
     appearance: none;
     -webkit-appearance: none;
+    outline: none;
     width: 80px;
     height: 30px;
     margin-left: 20px;
     padding-left: 10px;
+    border-radius: 5px;
+    color: #337ab7;
   }
 
   .hot {
@@ -190,5 +173,29 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .btn {
+    display: block;
+    color: #3f3f4f;
+    border: 1px solid #aaaaaa;
+    border-radius: 3px;
+    margin: 0 3px;
+  }
+
+  .select-item {
+    font-size: 10px;
+    padding: 3px 6px;
+    background: #ffffff;
+  }
+
+  .select-item:hover {
+    border: 1px solid #444444;
+  }
+
+  .arrow {
+    padding: 4px 8px;
+    font-size: 12px;
+    background: linear-gradient(white, #eeeeee);
+  }
 }
 </style>

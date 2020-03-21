@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="outer-box">
     <div class="toolbar">
       <ul class="menu">
         <li>
@@ -32,6 +32,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.outer-box {
+  height: 100%;
+}
+
 .toolbar {
   width: 100%;
   height: 30px;

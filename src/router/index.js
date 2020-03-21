@@ -17,6 +17,7 @@ import Artist from '../components/FindMusicSub/Artist.vue'
 import UserInfo from '../components/UserInfo.vue'
 import PlayList from '../components/PlayList.vue'
 import Music from '../components/Music.vue'
+import NeedLogin from '../components/NeedLogin.vue'
 
 Vue.use(VueRouter)
 
@@ -26,7 +27,10 @@ const routes = [{
     children: [{
       path: '/',
       component: Recommend
-    }]
+    }],
+    meta: {
+      requireLogin: false
+    }
   },
   {
     path: '/findmusic',
@@ -55,35 +59,66 @@ const routes = [{
         path: 'artist',
         component: Artist
       }
-    ]
+    ],
+    meta: {
+      requireLogin: false
+    }
   },
   {
     path: '/friends',
-    component: Friends
+    component: Friends,
+    meta: {
+      requireLogin: true
+    }
   },
   {
     path: '/musician',
-    component: Musician
+    component: Musician,
+    meta: {
+      requireLogin: false
+    }
   },
   {
     path: '/my',
-    component: MyMusic
+    component: MyMusic,
+    meta: {
+      requireLogin: true
+    }
   },
   {
     path: '/my/playlist',
-    component: MyMusic
+    component: MyMusic,
+    meta: {
+      requireLogin: true
+    }
   },
   {
     path: '/user/home',
-    component: UserInfo
+    component: UserInfo,
+    meta: {
+      requireLogin: true
+    }
   },
   {
     path: '/playlist',
-    component: PlayList
+    component: PlayList,
+    meta: {
+      requireLogin: false
+    }
   },
   {
     path: '/song',
-    component: Music
+    component: Music,
+    meta: {
+      requireLogin: false
+    }
+  },
+  {
+    path: '/needlogin',
+    component: NeedLogin,
+    meta: {
+      requireLogin: false
+    }
   }
 ]
 
@@ -91,4 +126,17 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.meta.requireLogin) {
+    if (localStorage.getItem('login_flag'))
+      next()
+    else {
+      next({
+        path: '/needlogin'
+      })
+    }
+  } else {
+    next()
+  }
+})
 export default router

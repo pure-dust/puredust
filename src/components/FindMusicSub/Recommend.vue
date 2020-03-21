@@ -25,14 +25,14 @@
                     :title="item.title"
                     class="link"
                   >
-                    <img :src="item.music_album" alt class="list-item" />
+                    <img :src="item.music_cover" alt class="list-item" />
                   </router-link>
                 </div>
                 <div class="bottom">
                   <router-link
                     :to="{path: '/playlist', query:{id: item.id}}"
                     :title="item.title"
-                  >{{ item.title }}</router-link>
+                  >{{ item.music_name }}</router-link>
                 </div>
               </div>
             </div>
@@ -55,7 +55,7 @@
                           :title="item.music_name"
                           class="link"
                         >
-                          <img :src="item.music_album" alt class="list-item" />
+                          <img :src="item.music_cover" alt class="list-item" />
                         </router-link>
                       </div>
                       <div class="bottom">
@@ -74,7 +74,7 @@
                           :title="item.music_name"
                           class="link"
                         >
-                          <img :src="item.music_album" alt class="list-item" />
+                          <img :src="item.music_cover" alt class="list-item" />
                         </router-link>
                       </div>
                       <div class="bottom">
@@ -93,7 +93,7 @@
                           :title="item.music_name"
                           class="link"
                         >
-                          <img :src="item.music_album" alt class="list-item" />
+                          <img :src="item.music_cover" alt class="list-item" />
                         </router-link>
                       </div>
                       <div class="bottom">
@@ -112,7 +112,7 @@
                           :title="item.music_name"
                           class="link"
                         >
-                          <img :src="item.music_album" alt class="list-item" />
+                          <img :src="item.music_cover" alt class="list-item" />
                         </router-link>
                       </div>
                       <div class="bottom">
@@ -140,7 +140,7 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="public/1.png" alt class="list-item" />
+                        <img src="http://p4.music.126.net/DrRIg6CrgDfVLEph9SNh7w==/18696095720518497.jpg?param=100y100" alt class="list-item" />
                       </a>
                     </div>
                   </div>
@@ -152,10 +152,11 @@
                     </div>
                   </div>
                 </div>
-                <ul>
+                <ul ref="link">
                   <li v-for="(item, i) in ranking_list[0]" :key="i">
                     <span>{{ i+1 }}</span>
                     <router-link
+                      :style="{width: width + 'px'}"
                       :to="{path: '/song', query:{id: item.music_id}}"
                     >{{ item.music_name }}</router-link>
                   </li>
@@ -169,7 +170,7 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="public/1.png" alt class="list-item" />
+                        <img src="http://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg?param=100y100" alt class="list-item" />
                       </a>
                     </div>
                   </div>
@@ -185,6 +186,7 @@
                   <li v-for="(item, i) in ranking_list[0]" :key="i">
                     <span>{{ i+1 }}</span>
                     <router-link
+                      :style="{width: width + 'px'}"
                       :to="{path: '/song', query:{id: item.music_id}}"
                     >{{ item.music_name }}</router-link>
                   </li>
@@ -198,7 +200,7 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="public/1.png" alt class="list-item" />
+                        <img src="http://p4.music.126.net/sBzD11nforcuh1jdLSgX7g==/18740076185638788.jpg?param=100y100" alt class="list-item" />
                       </a>
                     </div>
                   </div>
@@ -214,6 +216,7 @@
                   <li v-for="(item, i) in ranking_list[0]" :key="i">
                     <span>{{ i+1 }}</span>
                     <router-link
+                      :style="{width: width + 'px'}"
                       :to="{path: '/song', query:{id: item.music_id}}"
                     >{{ item.music_name }}</router-link>
                   </li>
@@ -279,7 +282,8 @@ export default {
       temp: 1,
       //排行榜
       ranking_list: [],
-      musician: []
+      musician: [],
+      width: 0
     };
   },
   methods: {
@@ -338,7 +342,7 @@ export default {
         url: "api/users/musician"
       })
         .then(res => {
-          this.musician = res.data
+          this.musician = res.data;
         })
         .catch(err => {
           console.log(err);
@@ -405,6 +409,10 @@ export default {
     this.getSongList();
     this.getRankingList();
     this.getMusician();
+    this.$nextTick(() => {
+      let width = this.$refs.link.clientWidth;
+      this.width = width * 0.8;
+    });
   },
   mounted() {
     let list1 = this.$refs.move_list1;
@@ -459,11 +467,15 @@ export default {
     background-color: #fcfcfc;
   }
 }
-//歌单
+//歌单推荐
 .song-sheet {
   display: flex;
-  justify-content: space-around;
   flex-wrap: wrap;
+  padding: 0 10px;
+
+  div:nth-child(4n + 0) {
+    margin-right: 0;
+  }
 }
 //歌曲推荐
 .music-list {
@@ -478,9 +490,9 @@ export default {
     padding: 0 10px;
 
     .move-arrow {
-      height: 15px;
-      width: 15px;
-      border-width: 5px;
+      height: 12px;
+      width: 12px;
+      border-width: 3px;
       border-style: solid;
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
@@ -501,6 +513,12 @@ export default {
       height: 100%;
       position: relative;
       overflow: hidden;
+
+      .detail-container {
+        width: 18%;
+        margin: 0;
+        height: 100%;
+      }
     }
 
     ul {
@@ -557,6 +575,10 @@ export default {
     .ranking-header {
       display: flex;
       padding: 25px 25px 10px 25px;
+
+      .detail-container {
+        margin: 0;
+      }
     }
 
     .ranking-title {
@@ -581,16 +603,32 @@ export default {
       list-style: none;
       font-size: 16px;
       margin: auto;
+      width: 100%;
 
       li {
         height: 35px;
         line-height: 35px;
-        padding-left: 20px;
+        overflow: hidden;
+        display: flex;
+
+        span {
+          padding-left: 20px;
+          display: block;
+          width: 10%;
+          font-size: 12px;
+        }
 
         a {
+          display: block;
           font-weight: normal;
-          font-size: 14px;
-          padding-left: 10px;
+          font-size: 12px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        a:hover {
+          text-decoration: underline;
         }
       }
       li:nth-child(odd) {
@@ -689,7 +727,8 @@ export default {
 }
 //正方形容器
 .detail-container {
-  width: 22%;
+  margin: 0 8% 0 0;
+  width: 19%;
 
   .img-container {
     width: 100%;
@@ -702,7 +741,7 @@ export default {
       height: 100%;
       position: absolute;
       display: block;
-      padding: 10px;
+      // padding: 10px;
     }
 
     .list-item {
@@ -788,6 +827,8 @@ export default {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(28, 28, 28, 0.3);
+    font-size: 12px;
+    padding-bottom: 5px;
 
     span {
       font-weight: 800;
@@ -801,6 +842,7 @@ export default {
 
   .detail-container {
     width: 30%;
+    margin: 0;
   }
 
   .singer-list {
@@ -811,6 +853,8 @@ export default {
     display: flex;
     color: rgba(28, 28, 28, 0.8);
     text-decoration: none;
+    cursor: pointer;
+    background: #fafafa;
 
     .singer-detail {
       width: 70%;
@@ -818,6 +862,7 @@ export default {
       flex-direction: column;
       justify-content: center;
       padding-left: 20px;
+      font-size: 14px;
       border: 0.5px solid rgba(28, 28, 28, 0.3);
       border-left: none;
 
@@ -829,7 +874,7 @@ export default {
 
   .content-box:hover {
     background: linear-gradient(
-      rgba(28, 28, 28, 0.1),
+      rgba(129, 129, 129, 0.1) 10%,
       rgba(199, 194, 194, 0.1)
     );
   }
