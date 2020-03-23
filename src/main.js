@@ -8,6 +8,7 @@ import swipe from './components/publicComponents/swipe/swipe-image.js'
 import music_play from './components/publicComponents/play/play-music.js'
 import Toast from './plugins/toast/toast.js'
 import Cookie from 'vue-cookies'
+import comments from './components/publicComponents/comments/comments.js'
 
 Vue.config.productionTip = false
 
@@ -16,6 +17,7 @@ Vue.use(Vueaxios, axios)
 Vue.use(swipe)
 Vue.use(music_play)
 Vue.use(Toast)
+Vue.use(comments)
 
 $cookies.config('', '/')
 

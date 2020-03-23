@@ -1,7 +1,7 @@
 import swipe from './swipe-image.vue';
 
 export default {
-    install:function(Vue) {
+    install(Vue) {
         Vue.component('swipe', swipe)
     }
 };

@@ -21,11 +21,11 @@
               </p>
             </div>
             <div class="fun-btn">
-              <button class="play-btn nor-btn e-btn" @click="playMusic">播放</button>
-              <button class="plus-btn nor-btn e-btn">+</button>
-              <button class="nor-btn" @click="collectMusic">收藏</button>
-              <button class="nor-btn">下载</button>
-              <button class="nor-btn">评论</button>
+              <a class="play-btn nor-btn e-btn" href="javascript:;" @click="playMusic">播放</a>
+              <a class="plus-btn nor-btn e-btn" href="javascript:;">+</a>
+              <a class="nor-btn" href="javascript:;" @click="collectMusic">收藏</a>
+              <a class="nor-btn" href="javascript:;">下载</a>
+              <a class="nor-btn" href="javascript:;" @click="scrolled('#comments')">评论</a>
             </div>
             <div class="collect" v-if="collectedFlag">
               <div class="collect-header">
@@ -47,6 +47,11 @@
             </div>
           </div>
         </div>
+        <comments
+          :index="(typeof this.id == Number)?this.id:parseInt(this.id)"
+          :kind="'music'"
+          id="comments"
+        ></comments>
       </div>
       <div class="right"></div>
     </div>
@@ -60,18 +65,17 @@ export default {
       music: {},
       play_list: [],
       collected_list: [],
-      id: "",
+      id: this.$route.query.id,
       collectedFlag: false
     };
   },
   methods: {
     getMusic() {
-      let id = this.$route.query.id;
       this.axios({
         method: "get",
         url: "api/users/getmusic",
         params: {
-          id: id
+          id: this.id
         }
       })
         .then(res => {
@@ -99,25 +103,41 @@ export default {
         .then(res => {
           if (res.data == "success") this.collectMusic();
           else {
-            this.$Toast({message: '当前歌曲已在歌单内', time: 3000})
+            this.$Toast({ message: "当前歌曲已在歌单内", time: 3000 });
           }
         })
         .catch(err => {
           console.log(err);
         });
-    }
+    },
+    scrolled(id) {
+      let anchor = this.$el.querySelector(id);
+      document.body.scrollTop = anchor.offsetTop;
+      document.documentElement.scrollTop = anchor.offsetTop;
+    },
+    MusicList() {}
   },
   created() {
     this.getMusic();
     this.play_list = this.$store.getters.getUserMusicList;
     this.collected_list = this.$store.getters.getUserCollectedList;
   },
+  computed: {
+    MusicList: {
+      get() {
+        return this.$store.getters.getUserMusicList;
+      },
+      set(value) {
+        
+      }
+    }
+  },
   watch: {
-    "this.$store.state.userMusicList"(val) {
-      this.play_list = this.$store.getters.getUserMusicList;
+    MusicList(val) {
+      this.play_list = val;
     },
-    "this.$store.state.userCollectedList"(val) {
-      this.collected_list = this.$store.getters.getUserCollectedList;
+    CollectedList(val) {
+      this.collected_list = val;
     }
   }
 };
@@ -198,6 +218,8 @@ export default {
         .nor-btn {
           width: 60px;
           height: 30px;
+          line-height: 30px;
+          text-align: center;
           border-radius: 3px;
           border: 1px solid #999;
           font-size: 12px;
@@ -265,6 +287,7 @@ export default {
   border-radius: 5px;
   box-shadow: 0 0 10px #282828;
   overflow: hidden;
+  z-index: 1000;
 
   .collect-header {
     padding: 5px;

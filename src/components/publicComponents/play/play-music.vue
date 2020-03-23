@@ -106,6 +106,7 @@ export default {
     //播放&暂停
     playOrPause() {
       if (!this.playFlag) {
+        this.audio.play();
         this.setProgress();
       } else {
         clearInterval(this.clock);
@@ -136,8 +137,8 @@ export default {
         this.cover_line.style.width =
           (this.currentTime / this.Time) * this.width + "px";
         if (this.currentTime >= this.Time) {
-          this.autoFlag = false
-          this.playFlag = false
+          this.autoFlag = false;
+          this.playFlag = false;
           clearInterval(this.clock);
           this.init();
         }
@@ -266,6 +267,7 @@ export default {
 
       .lyric {
         display: flex;
+        line-height: 14px;
 
         .song-title {
           color: white;

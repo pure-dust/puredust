@@ -85,8 +85,8 @@ export default new Vuex.Store({
       state.user_info = {}
       state.music = {}
       state.userMusicList = [],
-      state.userCollectedList = [],
-      this.loginFlag = false
+        state.userCollectedList = [],
+        this.loginFlag = false
     }
   },
   modules: {}
