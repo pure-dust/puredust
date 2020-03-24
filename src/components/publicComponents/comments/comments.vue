@@ -296,9 +296,9 @@ export default {
   .fun-box {
     margin-left: auto;
     font-size: 12px;
-    a {
-      color: #282828;
-    }
+      a {
+        color: #282828;
+      }
   }
 }
 
