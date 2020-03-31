@@ -26,3 +26,33 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+Vue.filter('dateFormat', time => {
+  let date = new Date(time);
+  let currentDate = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+  if (year == currentDate.getFullYear()) {
+    if (month == currentDate.getMonth() + 1) {
+      if (day == currentDate.getDate()) {
+        if (hour == currentDate.getHours()) {
+          return (
+            parseInt(currentDate.getMinutes()) - parseInt(minute) + "分钟前"
+          );
+        } else {
+          if (minute < 10) minute = "0" + minute;
+          return hour + ":" + minute;
+        }
+      } else {
+        return month + "月" + day + "日 " + hour + ":" + minute;
+      }
+    } else {
+      return month + "月" + day + "日 " + hour + ":" + minute;
+    }
+  } else {
+    return year + "年" + month + "月" + day + "日 " + hour + ":" + minute;
+  }
+})

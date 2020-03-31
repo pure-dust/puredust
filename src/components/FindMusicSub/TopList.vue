@@ -280,7 +280,8 @@ export default {
 //外层容器
 .outer-box {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  height: auto;
   display: flex;
   padding: 0 13%;
   background-color: #f5f5f5;

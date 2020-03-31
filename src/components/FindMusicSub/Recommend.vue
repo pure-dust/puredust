@@ -431,7 +431,7 @@ export default {
 //外层容器
 .content-box {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
 }
 //轮播图
 .rotationChart {

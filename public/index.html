@@ -51,6 +51,12 @@
       box-sizing: border-box;
     }
 
+    ol,
+    ul,
+    li {
+      list-style: none;
+    }
+
     a {
       text-decoration: none;
     }
@@ -70,8 +76,8 @@
 
     body {
       width: 100vw;
+      height: 100%;
       min-height: 100%;
-      /* overflow: hidden; */
     }
   </style>
 </head>
@@ -79,8 +85,9 @@
 <body>
   <div id="app"></div>
 </body>
-  <script>
-    let t = document.getElementsByTagName('body')[0]
-    t.style.minWidth = window.screen.width + 'px'
-  </script>
+<script>
+  let t = document.getElementsByTagName('body')[0]
+  t.style.minWidth = document.body.offsetWidth + 'px'
+</script>
+
 </html>

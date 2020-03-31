@@ -29,14 +29,6 @@
         >
           <router-link to="/friends">朋友</router-link>
         </li>
-        <li
-          class="menu-item"
-          data-index="4"
-          @click="selected"
-          :class="{ 'menu-item-selected': selected_index == 4 }"
-        >
-          <router-link to="/musician">音乐人</router-link>
-        </li>
         <li class="menu-item">下载客户端</li>
       </ul>
       <div class="search-container">
@@ -286,7 +278,7 @@ export default {
   }
 
   .title {
-    padding-left: 20%;
+    padding-left: 12%;
   }
 
   .header {

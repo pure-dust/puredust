@@ -57,7 +57,16 @@ const routes = [{
       },
       {
         path: 'artist',
-        component: Artist
+        component: Artist,
+        children: [{
+            path: 'signed',
+            component: Artist
+          },
+          {
+            path: 'cat',
+            component: Artist
+          }
+        ]
       }
     ],
     meta: {

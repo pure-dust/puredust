@@ -26,7 +26,7 @@
           <a
             href="javascript:;"
             class="release"
-            @click="release(item.comments_id, 1)"
+            @click="release(-1, 1)"
           >评论</a>
         </div>
       </div>
@@ -49,15 +49,15 @@
             >{{ item.comments_user_name }}</router-link>
             : {{ item.comments_content }}
           </div>
-          <div class="reply-content comment-content" v-if="item.comments_reply_id != 0">
-            <router-link
+          <div class="reply-content comment-content" v-if="item.comments_reply_id != -1">
+            <router-link  
               class="user-name"
               :to="{path: '/user/home', query: {id: item.subcomments.comments_user_id}}"
             >{{ item.subcomments.comments_user_name }}</router-link>
             : {{ item.subcomments.comments_content }}
           </div>
           <div class="down">
-            <span class="time">{{ item.comments_date | dataFormat }}</span>
+            <span class="time">{{ item.comments_date | dateFormat }}</span>
             <div class="fun-box">
               <a href="javascript:;" class="like">( {{ item.comments_like }} )&nbsp;|</a>
               <a href="javascript:;" class="reply" @click="replyPage(i)">&nbsp;回复</a>
@@ -124,7 +124,7 @@ export default {
           user_id: this.$store.getters.getUserInfo.id,
           date: new Date(),
           name: this.$store.getters.getUserInfo.name,
-          kind: "music",
+          kind: this.kind,
           comments_id: k == 1 ? -1 : id
         }
       })
@@ -156,35 +156,6 @@ export default {
   },
   created() {
     this.getComments();
-  },
-  filters: {
-    dataFormat(time) {
-      let date = new Date(time);
-      let currentDate = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-      let hour = date.getHours();
-      let minute = date.getMinutes();
-      if (year == currentDate.getFullYear()) {
-        if (month == currentDate.getMonth() + 1) {
-          if (day == currentDate.getDate()) {
-            if (hour == currentDate.getHours()) {
-              return (
-                parseInt(currentDate.getMinutes()) - parseInt(minute) + "分钟前"
-              );
-            } else {
-              if (minute < 10) minute = "0" + minute;
-              return hour + ":" + minute;
-            }
-          }
-        } else {
-          return month + "月" + day + "日 " + hour + ":" + minute;
-        }
-      } else {
-        return year + "年" + month + "月" + day + "日 " + hour + ":" + minute;
-      }
-    }
   }
 };
 </script>

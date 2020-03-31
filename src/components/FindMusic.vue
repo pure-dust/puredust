@@ -55,7 +55,7 @@ export default {
     a {
       color: white;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 12px;
     }
   }
 }

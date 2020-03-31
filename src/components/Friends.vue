@@ -18,11 +18,11 @@
             </div>
             <div class="dynamic-content">
               <div class="dynamic-kind">
-                <span class="user-name">{{ item.name }}</span>
-                <span class="kinds">{{ item.kind }}</span>
+                <span class="user-name">{{ item.dynamic_user_name }}</span>
+                <span class="kinds">{{ item.dynamic_kind }}</span>
               </div>
-              <div class="dynamic-time">{{ item.time | dataFormat }}</div>
-              <div class="dynamic-message">{{ item.message }}</div>
+              <div class="dynamic-time">{{ item.dynamic_date | dateFormat }}</div>
+              <div class="dynamic-message">{{ item.dynamic_content }}</div>
               <div class="dynamic-music" v-if="item.music">
                 <div class="img-container">
                   <img :src="item.music.music_cover" alt />
@@ -38,7 +38,7 @@
               <div class="dynamic-fun">
                 <a href="javascript:;" class="like">( {{ item.comments_like }} )</a>
                 <span>|</span>
-                <a href="javascript:;" class="reply" @click="replyPage(i)">回复</a>
+                <a href="javascript:;" class="reply" @click="replyPage(i)">评论</a>
               </div>
               <div class="dynamic-comments" v-if="current_index == i">
                 <comments v-if="current_index == i" :index="item.id" :kind="'dynamic'"></comments>
@@ -63,9 +63,36 @@
               class="input"
             ></textarea>
             <div class="add-music" @click="addMusicPage">
-              <div class="add-detail">
+              <div v-if="!addFlag" class="add-detail">
                 <img src alt />
                 给动态配上音乐
+              </div>
+              <div class="add-detail" v-else-if="musicInfo != ''">
+                <div class="img-container">
+                  <img :src="musicInfo.music_cover" alt />
+                </div>
+                <div class="song-name">{{ musicInfo.music_name }}</div>
+                <div class="singer">{{ musicInfo.music_singer }}</div>
+              </div>
+              <div class="add-detail" v-else-if="singerInfo != ''">
+                <div class="img-container">
+                  <img :src="singerInfo.head_portrait" alt />
+                </div>
+                <div class="song-name">{{ singerInfo.name }}</div>
+              </div>
+              <div class="add-detail" v-else-if="albumInfo != ''">
+                <div class="img-container">
+                  <img :src="albumInfo.cover" alt />
+                </div>
+                <div class="song-name">{{ albumInfo.name }}</div>
+                <div class="singer">{{ albumInfo.author }}</div>
+              </div>
+              <div class="add-detail" v-else-if="listInfo != ''">
+                <div class="img-container">
+                  <img :src="listInfo.cover" alt />
+                </div>
+                <div class="song-name">{{ listInfo.name }}</div>
+                <div class="singer">{{ listInfo.author }}</div>
               </div>
             </div>
           </div>
@@ -73,7 +100,7 @@
             <span class="length">{{ 140 - dynamic_value.length }}</span>
           </div>
           <div class="release-fun">
-            <a href="javascript:;" class="fun-btn release">分享</a>
+            <a href="javascript:;" class="fun-btn release" @click="releaseDynamic">分享</a>
             <a href="javascript:;" class="fun-btn cancel" @click="releasePage">取消</a>
           </div>
         </div>
@@ -96,7 +123,12 @@
             </ul>
             <div class="result-box">
               <div class="result" v-if="showMenuIndex == 1">
-                <div class="result-item" v-for="(item, i) in searchResult" :key="i">
+                <div
+                  class="result-item"
+                  v-for="(item, i) in searchResult"
+                  :key="i"
+                  @click="setInfo(item)"
+                >
                   <div class="img-container">
                     <img :src="item.music_cover" alt />
                   </div>
@@ -104,14 +136,46 @@
                   <div class="singer">{{ item.music_singer }}</div>
                 </div>
               </div>
-              <div class="result" v-if="showMenuIndex == 2">
-                <div class="result-item" v-for="(item, i) in searchResult" :key="i"></div>
+              <div class="result" v-else-if="showMenuIndex == 2">
+                <div
+                  class="result-item"
+                  v-for="(item, i) in searchResult"
+                  :key="i"
+                  @click="setInfo(item)"
+                >
+                  <div class="img-container">
+                    <img :src="item.head_portrait" alt />
+                  </div>
+                  <div class="song-name">{{ item.name }}</div>
+                </div>
               </div>
-              <div class="result" v-if="showMenuIndex == 3">
-                <div class="result-item" v-for="(item, i) in searchResult" :key="i"></div>
+              <div class="result" v-else-if="showMenuIndex == 3">
+                <div
+                  class="result-item"
+                  v-for="(item, i) in searchResult"
+                  :key="i"
+                  @click="setInfo(item)"
+                >
+                  <div class="img-container">
+                    <img :src="item.cover" alt />
+                  </div>
+                  <div class="song-name">{{ item.name }}</div>
+                  <div class="singer">{{ item.author }}</div>
+                </div>
               </div>
-              <div class="result" v-if="showMenuIndex == 4">
-                <div class="result-item" v-for="(item, i) in searchResult" :key="i"></div>
+              <div class="result" v-else-if="showMenuIndex == 4">
+                <div
+                  class="result-item"
+                  v-for="(item, i) in searchResult"
+                  :key="i"
+                  @click="setInfo(item)"
+                >
+                  <div class="img-container">
+                    <img :src="item.cover" alt />
+                  </div>
+                  <div class="song-name">{{ item.name }}</div>
+                  <div class="singer">{{ item.author }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -136,49 +200,126 @@ export default {
       release_flag: false,
       showMenuIndex: 1,
       searchValue: "",
-      searchResult: ""
+      searchResult: "",
+      musicInfo: "",
+      vedioInfo: "",
+      albumInfo: "",
+      singerInfo: "",
+      listInfo: "",
+      addFlag: false
     };
   },
   methods: {
-    init() {
-      this.dynamic = [
-        {
-          id: 1,
-          name: "test",
-          head_portrait: "/assets/image/default_cover.png",
-          kind: "发布动态",
-          time: new Date(),
-          message: "山川异域" + " \n " + "日月同天",
-          music: {
-            music_id: 19,
-            music_name: "橙光音乐,米豆音乐 - 东查西探",
-            music_singer: "橙光音乐/米豆音乐",
-            music_data: "music/橙光音乐,米豆音乐 - 东查西探.mp3",
-            music_album: "橙光音乐集·欢快中国风1",
-            music_cover: "http://127.0.0.1:5050/images/东查西探.png"
-          },
-          video: {
-            video_cover: "http://127.0.0.1:5050/images/东查西探.png"
-          }
-        }
-      ];
-    },
     replyPage(i) {
-      if (this.current_index == i) this.current_index = -1;
-      else this.current_index = i;
+      this.current_index = this.current_index == i ? -1 : i;
     },
     releasePage() {
       this.release_flag = !this.release_flag;
     },
     addMusicPage() {
       this.addMusic_flag = !this.addMusic_flag;
+      this.addFlag = false;
     },
     MenuIndex(i) {
       this.showMenuIndex = i;
+    },
+    getSearchResult(url, val) {
+      this.axios({
+        method: "get",
+        url: url,
+        params: {
+          sValue: val
+        }
+      })
+        .then(res => {
+          this.searchResult = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    setSearchUrl(index) {
+      let url = "";
+      if (this.showMenuIndex == 1) url = "api/users/searchmusic";
+      else if (this.showMenuIndex == 2) url = "api/users/searchsinger";
+      else if (this.showMenuIndex == 3) url = "api/users/searchalbum";
+      else if (this.showMenuIndex == 4) url = "api/users/searchlist";
+      return url;
+    },
+    releaseDynamic() {
+      let temp = { kind: -1, addition: -1 };
+      if (this.musicInfo != "") {
+        temp.kind = 1;
+        temp.addition = this.musicInfo.music_id;
+      } else if (this.singerInfo != "") {
+        temp.kind = 2;
+        temp.addition = this.singerInfo.user_id;
+      } else if (this.albumInfo != "") {
+        temp.kind = 3;
+        temp.addition = this.albumInfo.id;
+      } else if (this.listInfo != "") {
+        temp.kind = 4;
+        temp.addition = this.listInfo.id;
+      }
+      this.axios({
+        method: "post",
+        url: "api/users/releasedynamic",
+        data: {
+          name: this.$store.getters.getUserInfo.name,
+          userId: this.$store.getters.getUserInfo.id,
+          kind: 1,
+          content: this.dynamic_value,
+          date: new Date(),
+          addition: temp,
+          video: this.vedioInfo != "" ? this.vedioInfo.video_id : -1
+        }
+      })
+        .then(res => {})
+        .catch(err => {
+          throw err;
+        });
+    },
+    setInfo(item) {
+      this.musicInfo = this.singerInfo = this.albumInfo = this.listInfo = "";
+      switch (this.showMenuIndex) {
+        case 1: {
+          this.musicInfo = { ...item };
+          break;
+        }
+        case 2: {
+          this.singerInfo = { ...item };
+          break;
+        }
+        case 3: {
+          this.albumInfo = { ...item };
+          break;
+        }
+        case 4: {
+          this.listInfo = { ...item };
+          break;
+        }
+      }
+      this.addMusic_flag = !this.addMusic_flag;
+      this.addFlag = true;
+    },
+    getDynamic() {
+      this.axios({
+        method: "get",
+        url: "api/users/getdynamic",
+        params: {
+          id: this.$store.getters.getUserInfo.id
+        }
+      })
+        .then(res => {
+          this.dynamic = res.data;
+        })
+        .catch(err => {
+          throw err;
+        });
     }
   },
   created() {
-    this.init();
+    this.getDynamic();
   },
   filters: {
     dataFormat(time) {
@@ -211,28 +352,19 @@ export default {
   },
   watch: {
     searchValue(val) {
-      let url = "";
       if (val === "") {
         this.searchResult = {};
         return;
       }
-      if (this.showMenuIndex == 1) url = "api/users/searchmusic";
-      else if (this.showMenuIndex == 2) url = "api/users/searchsinger";
-      else if (this.showMenuIndex == 3) url = "api/users/searchalbum";
-      else if (this.showMenuIndex == 4) url = "api/users/searchlist";
-      this.axios({
-        method: "get",
-        url: url,
-        params: {
-          sValue: val
-        }
-      })
-        .then(res => {
-          this.searchResult = res.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let url = this.setSearchUrl(this.showMenuIndex);
+      this.getSearchResult(url, val);
+    },
+    showMenuIndex(val) {
+      if (this.searchValue == "") return;
+      else {
+        let url = this.setSearchUrl(val);
+        this.getSearchResult(url, this.searchValue);
+      }
     }
   }
 };
@@ -240,11 +372,13 @@ export default {
 <style lang="less" scoped>
 .outer-box {
   width: 100%;
+  min-height: 100%;
   height: 100%;
   padding: 0 13%;
   background: #f5f5f5;
 
   .border-line {
+    height: 100%;
     display: flex;
     border: 1px solid rgba(28, 28, 28, 0.3);
     border-top: none;
@@ -297,7 +431,7 @@ export default {
   .dynamic-detail {
     display: flex;
     border-bottom: 1px solid #e8e8e9;
-    padding-bottom: 20px;
+    padding: 20px 0;
 
     .head-img {
       width: 8%;
@@ -402,8 +536,10 @@ export default {
 
       .dynamic-comments {
         margin-top: 10px;
-        padding: 10px;
-        background: #f5f5f5;
+        padding: 10px 15px;
+        background: #f8f8f8;
+        border: 1px solid #d9d9d9;
+        box-shadow: inset 0 0 1px #fcfcfc;
       }
     }
   }
@@ -455,13 +591,27 @@ export default {
         .add-detail {
           color: #333;
           font-size: 14px;
-          height: 40px;
-          line-height: 40px;
+          height: 50px;
+          line-height: 50px;
           border-top: 1px solid #dedede;
           background-image: url(/assets/image/plus.png);
           background-repeat: no-repeat;
           background-size: 14px;
           background-position: 98% 50%;
+          display: flex;
+          align-items: center;
+        }
+
+        .img-container {
+          width: 8%;
+          padding-bottom: 8%;
+          position: relative;
+
+          img {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+          }
         }
       }
 
@@ -570,7 +720,7 @@ export default {
       border-left: none;
       padding: 5px;
       font-size: 12px;
-      color: #999;
+      color: #666;
       cursor: pointer;
     }
 
@@ -599,6 +749,7 @@ export default {
       align-items: center;
       padding: 8px;
       font-size: 12px;
+      cursor: pointer;
 
       .img-container {
         width: 10%;
@@ -614,7 +765,7 @@ export default {
     }
 
     .result-item:nth-child(even) {
-      background: #f5f5f5;
+      background: #f2f2f2;
     }
 
     .result-item:hover {
