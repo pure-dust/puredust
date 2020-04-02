@@ -80,12 +80,7 @@ export default {
 
 <style lang="less" scoped>
 .outer-box {
-  width: 100%;
-  min-height: 100%;
-  padding: 0 13%;
-  background-color: #f5f5f5;
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
-
   .inner-box {
     padding: 40px;
     height: 100%;

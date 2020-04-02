@@ -19,18 +19,51 @@
         </div>
       </div>
       <div class="right">
-        <div class="top">
-          <span class="top-title">{{ title }}</span>
+        <div v-if="this.$route.path == '/findmusic/artist/'">
+          <div class="top">
+            <span class="top-title">入驻歌手</span>
+          </div>
+          <div class="img-box">
+            <ul>
+              <li v-for="(item, i) in singerInfo" :key="i">
+                <div class="img-container">
+                  <router-link :to="{path: '/artist', query: {id: item.id}}">
+                    <img :src="item.cover" alt />
+                  </router-link>
+                </div>
+                <div class="singer-info">{{ item.name }}</div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="img-box">
-          <ul>
-            <li v-for="(item, i) in singerInfo" :key="i">
-              <div class="img-container">
-                <img :src="item.cover" alt />
-              </div>
-              <div class="singer-info">{{ item.name }}</div>
-            </li>
-          </ul>
+        <div>
+          <div class="top">
+            <span>{{ subtitle }}</span>
+          </div>
+          <div class="img-box">
+            <div class="initial-search" v-if="current != 0">
+              <router-link
+                :to="{path: menu[current].subtitle[subcurrent].url, query: { id: menu[current].subtitle[subcurrent].query, iniatial: -1 } }"
+                class="hot"
+                :class="{'router-link-exact-active': !this.$route.query.initial}"
+              >热门</router-link>
+              <router-link
+                v-for="(item, i) in initial_box"
+                :key="i"
+                :to="{path: '/findmusic/artist/cat', query:{id: menu[current].subtitle[subcurrent].query,initial: item}}"
+              >{{ item }}</router-link>
+            </div>
+            <ul>
+              <li v-for="(item, i) in singerInfo" :key="i">
+                <div class="img-container">
+                  <router-link :to="{path: '/artist', query: {id: item.id}}">
+                    <img :src="item.cover" alt />
+                  </router-link>
+                </div>
+                <div class="singer-info">{{ item.name }}</div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -46,7 +79,9 @@ export default {
       current: 0,
       subcurrent: 0,
       title: "",
-      singerInfo: []
+      singerInfo: [],
+      subtitle: "",
+      initial_box: []
     };
   },
   methods: {
@@ -68,71 +103,47 @@ export default {
       this.subcurrent = index;
     },
     getSingerInfo() {
-        this.axios({
-            method: "get",
-            url: "api/users/getsingerinfo",
-            params: this.$route.query.id
-        }).then(res => {
-            
+      this.axios({
+        method: "get",
+        url: "api/users/getsingerinfo",
+        params: this.$route.query.id
+          ? this.$route.query.initial
+            ? { id: this.$route.query.id, initial: this.$route.query.initial }
+            : { id: this.$route.query.id }
+          : {}
+      })
+        .then(res => {
+          this.singerInfo = res.data;
+          this.subtitle = this.menu[this.current].subtitle[
+            this.subcurrent
+          ].title;
         })
+        .catch(err => {
+          throw err;
+        });
     }
   },
   created() {
     this.getArtistMenu();
-    this.singerInfo = [
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      },
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      },
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      },
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      },
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      },
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      },
-      {
-        cover:
-          "http://p1.music.126.net/cnGpIQ6rQCKVrDyVVSpzeg==/3263350518850877.jpg?param=130y130",
-        name: "JJ Lin"
-      }
-    ];
-    console.log(this.$route.query.id);
+    this.getSingerInfo();
+    for (let i = 0; i < 26; i++)
+      this.initial_box[i] = String.fromCharCode(65 + i);
   },
+  mounted() {},
   watch: {
-      
+    routePath(val) {
+      this.getSingerInfo();
+    }
+  },
+  computed: {
+    routePath() {
+      return this.$route.query;
+    }
   }
 };
 </script>
 
 <style lang="less" scoped>
-.outer-box {
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  padding: 0 13%;
-  background: #f5f5f5;
-}
-
 .border-line {
   height: 100%;
   border: 1px solid #ccc;
@@ -242,6 +253,40 @@ export default {
         line-height: 24px;
       }
     }
+  }
+}
+
+.initial-search {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+  span {
+    height: 22px;
+    line-height: 22px;
+    font-size: 12px;
+    color: #333;
+  }
+
+  a {
+    color: #333;
+    width: 18px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    font-size: 12px;
+    display: block;
+  }
+
+  .hot {
+    width: 40px;
+  }
+
+  .router-link-exact-active {
+    background: #337ab7;
+    border-radius: 3px;
+    color: #fff;
   }
 }
 </style>

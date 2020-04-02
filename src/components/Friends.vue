@@ -370,29 +370,21 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.outer-box {
-  width: 100%;
-  min-height: 100%;
+.border-line {
   height: 100%;
-  padding: 0 13%;
-  background: #f5f5f5;
+  display: flex;
+  border: 1px solid rgba(28, 28, 28, 0.3);
+  border-top: none;
+  background: #fff;
 
-  .border-line {
-    height: 100%;
-    display: flex;
-    border: 1px solid rgba(28, 28, 28, 0.3);
-    border-top: none;
-    background: #fff;
+  .left {
+    flex: 2;
+    border-right: 1px solid rgba(28, 28, 28, 0.3);
+    padding: 10px 20px;
+  }
 
-    .left {
-      flex: 2;
-      border-right: 1px solid rgba(28, 28, 28, 0.3);
-      padding: 10px 20px;
-    }
-
-    .right {
-      flex: 1;
-    }
+  .right {
+    flex: 1;
   }
 }
 

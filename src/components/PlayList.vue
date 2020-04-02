@@ -34,7 +34,9 @@
                 <tr v-for="(item, i) in music_list" :key="i">
                   <td>{{ i+1 }}</td>
                   <td>
-                    <router-link :to="{path: '/song', query:{id: item.music_id}}">{{ item.music_name }}</router-link>
+                    <router-link
+                      :to="{path: '/song', query:{id: item.music_id}}"
+                    >{{ item.music_name }}</router-link>
                   </td>
                   <td>{{ item.time }}</td>
                   <td>
@@ -69,39 +71,35 @@ export default {
         params: {
           id: id
         }
-      }).then(res => {
-          this.music_list = res.data
-      }).catch(err => {
-          console.log(err)
-      });
+      })
+        .then(res => {
+          this.music_list = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   created() {
-      this.getMusic()
+    this.getMusic();
   }
 };
 </script>
 
 <style lang="less" scoped>
-.outer-box {
-  width: 100%;
+.border-line {
   height: 100%;
-  padding: 0 13%;
+  border: 1px solid rgba(28, 28, 28, 0.3);
+  border-top: none;
+  display: flex;
 
-  .border-line {
-    height: 100%;
-    border: 1px solid rgba(28, 28, 28, 0.3);
-    border-top: none;
-    display: flex;
+  .left {
+    flex: 3;
+    border-right: 1px solid rgba(28, 28, 28, 0.3);
+  }
 
-    .left {
-      flex: 3;
-      border-right: 1px solid rgba(28, 28, 28, 0.3);
-    }
-
-    .right {
-      flex: 1;
-    }
+  .right {
+    flex: 1;
   }
 }
 

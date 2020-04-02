@@ -127,9 +127,7 @@ export default {
       get() {
         return this.$store.getters.getUserMusicList;
       },
-      set(value) {
-        
-      }
+      set(value) {}
     }
   },
   watch: {
@@ -144,27 +142,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.outer-box {
-  width: 100%;
-  min-height: 100%;
-  padding: 0 13%;
-  background: #f5f5f5;
+.border-line {
+  height: 100%;
+  border: 1px solid rgba(28, 28, 28, 0.3);
+  border-top: none;
+  display: flex;
+  background: #ffffff;
 
-  .border-line {
-    height: 100%;
-    border: 1px solid rgba(28, 28, 28, 0.3);
-    border-top: none;
-    display: flex;
-    background: #ffffff;
+  .left {
+    flex: 2.5;
+    border-right: 1px solid rgba(28, 28, 28, 0.3);
+  }
 
-    .left {
-      flex: 2.5;
-      border-right: 1px solid rgba(28, 28, 28, 0.3);
-    }
-
-    .right {
-      flex: 1;
-    }
+  .right {
+    flex: 1;
   }
 }
 

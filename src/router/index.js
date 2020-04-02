@@ -19,6 +19,8 @@ import PlayList from '../components/PlayList.vue'
 import Music from '../components/Music.vue'
 import NeedLogin from '../components/NeedLogin.vue'
 
+import Singer from '../components/Singer.vue'
+
 Vue.use(VueRouter)
 
 const routes = [{
@@ -125,6 +127,13 @@ const routes = [{
   {
     path: '/needlogin',
     component: NeedLogin,
+    meta: {
+      requireLogin: false
+    }
+  },
+  {
+    path: '/artist',
+    component: Singer,
     meta: {
       requireLogin: false
     }

@@ -3,7 +3,7 @@
     <div class="rotationChart">
       <swipe :auto="4000" :image="rotationChartData" v-if="rotationChartData.length > 0"></swipe>
     </div>
-    <div class="main-content">
+    <div class="outer-box">
       <div class="border-line">
         <div class="main-left">
           <div class="recommend-container">
@@ -441,12 +441,8 @@ export default {
   border-bottom: 1px solid rgba(28, 28, 28, 0.5);
 }
 //主体区域
-.main-content {
-  width: 100%;
-  height: 100%;
-  padding: 0 13%;
+.outer-box {
   border-top: none;
-  background-color: #f5f5f5;
 
   .border-line {
     width: 100%;

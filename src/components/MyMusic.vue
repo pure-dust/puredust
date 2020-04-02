@@ -252,9 +252,6 @@ export default {
 <style lang="less" scoped>
 //最外层容器
 .outer-box {
-  width: 100%;
-  background-color: #f5f5f5;
-  padding: 0 13%;
   overflow: hidden;
 
   .inner-box {
