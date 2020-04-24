@@ -48,10 +48,9 @@
 export default {
   data() {
     return {
-      test: {
-        cover: ""
-      },
       music_info: this.$store.getters.getMusic,
+      music_list: this.$store.getters.getCurrentPlayList,
+      currentPlayId: 0,
       playFlag: false,
       hiddenFlag: false,
       Time: null,
@@ -114,10 +113,27 @@ export default {
       }
       this.playFlag = !this.playFlag;
     },
+    //上一首
+    backward() {
+      this.currentPlayId--;
+      if (this.currentPlayId == -1)
+        this.currentPlayId = this.music_list.length - 1;
+      this.getMusic(
+        this.music_list[this.currentPlayId].id
+          ? this.music_list[this.currentPlayId].id
+          : this.music_list[this.currentPlayId].music_id
+      );
+    },
     //下一首
-    backward() {},
-    //下一首
-    forward() {},
+    forward() {
+      this.currentPlayId++;
+      if (this.currentPlayId == this.music_list.length) this.currentPlayId = 0;
+      this.getMusic(
+        this.music_list[this.currentPlayId].id
+          ? this.music_list[this.currentPlayId].id
+          : this.music_list[this.currentPlayId].music_id
+      );
+    },
     //隐藏播放区域
     hidden() {
       this.hiddenFlag = !this.hiddenFlag;
@@ -126,7 +142,7 @@ export default {
     autoPlay() {
       if (this.clock) clearInterval(this.clock);
       this.setProgress();
-      this.playFlag = !this.playFlag;
+      this.playFlag = true;
     },
     //设置进度条
     setProgress() {
@@ -150,6 +166,21 @@ export default {
       this.autoFlag = false;
       this.init();
       // console.log(111)
+    },
+    getMusic(id) {
+      this.axios({
+        method: "get",
+        url: "api/users/getmusic",
+        params: {
+          id: id
+        }
+      })
+        .then(res => {
+          this.$store.commit("setMusic", res.data);
+        })
+        .catch(err => {
+          throw err;
+        });
     }
   },
   created() {
@@ -179,6 +210,18 @@ export default {
       this.autoFlag = true;
       this.init();
       this.autoPlay();
+    },
+    currentPlayList(val) {
+      this.music_list = val;
+      if (val.length == 0) return;
+      let id = val[0].id ? val[0].id : val[0].music_id;
+      this.currentPlayId = 0;
+      this.getMusic(id);
+    }
+  },
+  computed: {
+    currentPlayList() {
+      return this.$store.getters.getCurrentPlayList;
     }
   }
 };

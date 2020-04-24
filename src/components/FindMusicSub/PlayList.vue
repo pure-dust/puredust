@@ -3,17 +3,17 @@
     <div class="inner-box">
       <div class="header">
         <p class="title">全部</p>
-        <select name="kinds" id="kinds" class="kinds">
-          <option v-for="(item, i) in list_kinds" :key="i" :value="item">{{ item.name }}</option>
-        </select>
-        <a href class="hot">热门</a>
       </div>
       <div class="list-container">
         <div v-for="(item, i) in music_list" :key="i" class="detail-container">
           <div class="img-container">
-            <a :href="item.url" :title="item.title" class="link">
+            <router-link
+              :to="{path: '/playlist',query:{id:item.id}}"
+              :title="item.title"
+              class="link"
+            >
               <img :src="item.cover" alt class="list-item" />
-            </a>
+            </router-link>
           </div>
           <div class="bottom">
             <a :href="item.url" :title="item.title">{{ item.name }}</a>
@@ -73,7 +73,6 @@ export default {
   created() {
     this.init();
     this.getAllList();
-    
   }
 };
 </script>
@@ -83,7 +82,7 @@ export default {
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
   .inner-box {
     padding: 40px;
-    height: 100%;
+    min-height: 600px;
     background-color: white;
     border-left: 1px solid rgba(28, 28, 28, 0.3);
     border-right: 1px solid rgba(28, 28, 28, 0.3);
@@ -100,22 +99,6 @@ export default {
     margin: 0;
     font-size: 24px;
   }
-
-  .kinds {
-    appearance: none;
-    -webkit-appearance: none;
-    outline: none;
-    width: 80px;
-    height: 30px;
-    margin-left: 20px;
-    padding-left: 10px;
-    border-radius: 5px;
-    color: #337ab7;
-  }
-
-  .hot {
-    margin-left: auto;
-  }
 }
 
 .list-container {
@@ -129,23 +112,11 @@ export default {
     margin-top: 30px;
     margin-right: 5%;
 
-    .img-container {
+    .link {
       width: 100%;
-      height: 0;
-      padding-bottom: 100%;
-      position: relative;
-
-      .link {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        display: block;
-      }
-
-      .list-item {
-        width: 100%;
-        height: 100%;
-      }
+      height: 100%;
+      position: absolute;
+      display: block;
     }
 
     .bottom {

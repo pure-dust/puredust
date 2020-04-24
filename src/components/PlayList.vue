@@ -5,17 +5,20 @@
         <div class="content-box">
           <div class="header">
             <div class="img-container">
-              <img src="static/1.png" alt class="list-item" />
+              <img :src="info.cover" alt class="list-item" />
               <div class="img-border"></div>
             </div>
             <div class="header-detail">
-              <div class="title">11</div>
-              <div class="intro">11</div>
+              <div class="title">{{ info.name }}</div>
+              <router-link
+                class="intro"
+                :to="{ path: '/user/home',query:{id: info.author} }"
+              >{{ info.author }}</router-link>
               <div class="fun">
-                <button type="button">播放</button>
-                <button type="button">收藏</button>
-                <button type="button">下载</button>
-                <button type="button">评论</button>
+                <a href="javascript:;" @click="playList">播放</a>
+                <a href="javascript:;" @click="collectList">收藏</a>
+                <a href="javascript:;" @click="downLoad">下载</a>
+                <a href="#comment">评论</a>
               </div>
             </div>
           </div>
@@ -24,29 +27,11 @@
               <p>歌曲列表</p>
             </div>
             <div class="music-content">
-              <table>
-                <tr>
-                  <th></th>
-                  <th>标题</th>
-                  <th>时长</th>
-                  <th>歌手</th>
-                </tr>
-                <tr v-for="(item, i) in music_list" :key="i">
-                  <td>{{ i+1 }}</td>
-                  <td>
-                    <router-link
-                      :to="{path: '/song', query:{id: item.music_id}}"
-                    >{{ item.music_name }}</router-link>
-                  </td>
-                  <td>{{ item.time }}</td>
-                  <td>
-                    <router-link
-                      :to="{path: '/findmusic/artist', query:{id: item.singer_id}}"
-                    >{{ item.music_singer }}</router-link>
-                  </td>
-                </tr>
-              </table>
+              <songs :song_list="music_list" :flag="true"></songs>
             </div>
+          </div>
+          <div class="comments-box" id="comment">
+            <comments v-if="info.id" :kind="'playlist'" :index="info.id"></comments>
           </div>
         </div>
       </div>
@@ -59,7 +44,8 @@
 export default {
   data() {
     return {
-      music_list: []
+      music_list: [],
+      info: {}
     };
   },
   methods: {
@@ -73,11 +59,40 @@ export default {
         }
       })
         .then(res => {
-          this.music_list = res.data;
+          this.music_list = res.data.list;
+          this.info = res.data.info;
         })
         .catch(err => {
           console.log(err);
         });
+    },
+    playList() {
+      this.$store.commit("setCurrentPlayList", this.music_list);
+    },
+    collectList() {
+      this.axios({
+        method: "post",
+        url: "api/users/addcollectlist",
+        data: {
+          id: this.info.id,
+          author: this.info.author,
+          owner: this.$store.getters.getUserInfo.id
+        }
+      }).then(res => {
+        if (res.data == 1) this.$Toast("收藏成功");
+        else if (res.data == 0) this.$Toast("列表已存在");
+        else if (res.data == "err") this.$Toast("失败!");
+      });
+    },
+    downLoad() {
+      this.music_list.forEach(element => {
+        let alink = document.createElement("a");
+        alink.setAttribute(
+          "href",
+          `http://127.0.0.1:5050/users/downloadmusic?id=${element.music_id}`
+        );
+        alink.click();
+      });
     }
   },
   created() {
@@ -92,6 +107,7 @@ export default {
   border: 1px solid rgba(28, 28, 28, 0.3);
   border-top: none;
   display: flex;
+  background-color: #fff;
 
   .left {
     flex: 3;
@@ -112,23 +128,34 @@ export default {
     .header-detail {
       width: 78%;
       height: 100%;
-      padding-left: 20px;
+      padding: 0 20px;
 
       .title {
         font-size: 24px;
+        margin-bottom: 10px;
       }
 
       .intro {
-        color: darkgray;
+        color: #337ab7;
+        margin-bottom: 10px;
+        display: block;
       }
 
       .fun {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
 
-        button {
+        a {
+          display: inline-block;
           width: 80px;
           height: 30px;
+          text-align: center;
+          line-height: 30px;
+          background: linear-gradient(#8ec3f1, #4a96d8);
+          border: 1px solid #285c8a;
+          color: #fff;
+          font-size: 14px;
+          border-radius: 3px;
         }
       }
     }
@@ -145,15 +172,7 @@ export default {
 
 .img-container {
   width: 22%;
-  height: 0;
   padding-bottom: 22%;
-  position: relative;
-
-  .list-item {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-  }
 }
 
 .music-box {
@@ -166,67 +185,10 @@ export default {
 
   .music-content {
     border-top: 2px solid #337ab7;
-    table {
-      width: 100%;
-      border: 1px solid rgba(28, 28, 28, 0.3);
-      border-collapse: collapse;
-
-      th,
-      td {
-        font-weight: normal;
-        color: rgba(28, 28, 28, 0.8);
-        height: 30px;
-        line-height: 30px;
-        padding-left: 5px;
-        font-size: 12px;
-
-        a {
-          color: rgba(28, 28, 28, 0.8);
-        }
-
-        a:hover {
-          text-decoration: underline;
-        }
-      }
-
-      th {
-        background: linear-gradient(rgb(255, 255, 255), rgb(235, 235, 235));
-        border: 1px solid rgba(28, 28, 28, 0.3);
-        text-align: left;
-        color: rgba(28, 28, 28, 0.8);
-        box-shadow: 0 1px 2px #aaaaaa;
-        box-sizing: content-box;
-      }
-
-      tr:nth-child(odd) {
-        background-color: white;
-      }
-
-      tr:nth-child(even) {
-        background-color: rgba(230, 230, 230, 0.3);
-      }
-
-      td {
-        height: 30px;
-        line-height: 30px;
-      }
-
-      td:nth-child(1),
-      th:nth-child(1) {
-        width: 10%;
-        padding-left: 3%;
-      }
-
-      td:nth-child(2),
-      th:nth-child(2) {
-        width: 55%;
-      }
-
-      td:nth-child(3),
-      th:nth-child(3) {
-        width: 15%;
-      }
-    }
   }
+}
+
+.comments-box {
+  padding: 40px;
 }
 </style>

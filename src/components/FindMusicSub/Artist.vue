@@ -28,7 +28,7 @@
               <li v-for="(item, i) in singerInfo" :key="i">
                 <div class="img-container">
                   <router-link :to="{path: '/artist', query: {id: item.id}}">
-                    <img :src="item.cover" alt />
+                    <img class="list-item" :src="item.cover" alt />
                   </router-link>
                 </div>
                 <div class="singer-info">{{ item.name }}</div>
@@ -57,7 +57,7 @@
               <li v-for="(item, i) in singerInfo" :key="i">
                 <div class="img-container">
                   <router-link :to="{path: '/artist', query: {id: item.id}}">
-                    <img :src="item.cover" alt />
+                    <img class="list-item" :src="item.cover" alt />
                   </router-link>
                 </div>
                 <div class="singer-info">{{ item.name }}</div>
@@ -144,24 +144,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.border-line {
-  height: 100%;
-  border: 1px solid #ccc;
-  border-top: none;
-  display: flex;
+.left {
+  flex: 1;
+  border-right: 1px solid #ccc;
+  padding: 30px 10px;
+  background: #f9f9f9;
+}
 
-  .left {
-    flex: 1;
-    border-right: 1px solid #ccc;
-    padding: 30px 10px;
-    background: #f9f9f9;
-  }
-
-  .right {
-    flex: 4;
-    padding: 40px;
-    background: #fff;
-  }
+.right {
+  flex: 4;
+  padding: 40px;
+  background: #fff;
 }
 
 .singer-kind {
@@ -234,16 +227,6 @@ export default {
       width: 18%;
       margin: 0 0 20px 2%;
       float: left;
-      .img-container {
-        position: relative;
-        width: 100%;
-        padding-bottom: 100%;
-        img {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-        }
-      }
 
       .singer-info {
         padding-top: 2px;

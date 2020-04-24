@@ -6,10 +6,7 @@
           <div class="list-menu" v-for="(item,i) in list_menu" :key="i">
             <div class="list-title">{{ item.title }}</div>
             <ul v-for="(item_1, i_1) in item.content" :key="i_1" class="menu-box">
-              <router-link
-                :to="{path: '/findmusic/toplist', query:{id: item_1.url}}"
-                @click="getData(item_1.url)"
-              >
+              <router-link :to="{path: '/findmusic/toplist', query:{id: item_1.url}}">
                 <li class="item-box">
                   <div class="img-container">
                     <img :src="item_1.img_url" alt class="list-item" />
@@ -28,17 +25,16 @@
         <div class="content-box">
           <div class="header">
             <div class="img-container">
-              <img src="static/1.png" alt class="list-item" />
+              <img :src="current.img_url" alt class="list-item" />
               <div class="img-border"></div>
             </div>
             <div class="header-detail">
-              <div class="title">11</div>
-              <div class="intro">11</div>
+              <div class="title">{{ current.name }}</div>
+              <div class="intro">{{ current.intro }}</div>
               <div class="fun">
-                <button type="button">播放</button>
+                <button type="button" @click="playList">播放</button>
                 <button type="button">收藏</button>
                 <button type="button">下载</button>
-                <button type="button">评论</button>
               </div>
             </div>
           </div>
@@ -57,13 +53,15 @@
                 <tr v-for="(item, i) in music_list" :key="i">
                   <td>{{ i+1 }}</td>
                   <td>
-                    <router-link :to="{path: '/song', query:{id: item.music_id}}">{{ item.name }}</router-link>
+                    <router-link
+                      :to="{path: '/song', query:{id: item.music_id}}"
+                    >{{ item.music_name }}</router-link>
                   </td>
                   <td>{{ item.time }}</td>
                   <td>
                     <router-link
                       :to="{path: '/findmusic/artist', query:{id: item.singer_id}}"
-                    >{{ item.singer }}</router-link>
+                    >{{ item.music_singer }}</router-link>
                   </td>
                 </tr>
               </table>
@@ -80,233 +78,71 @@ export default {
   data() {
     return {
       list_menu: [],
-      title: 1,
-      intro: 1,
       music_list: [],
-      comment: []
+      current: ""
     };
   },
   methods: {
-    init() {
-      this.list_menu = [
-        {
-          title: "尘心音乐特色榜",
-          content: [
-            {
-              name: " 尘心音乐飙升榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 1
-            },
-            {
-              name: " 尘心音乐新歌榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 2
-            },
-            {
-              name: "尘心原创歌曲榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 3
-            },
-            {
-              name: " 尘心音乐热歌榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 4
-            }
-          ]
-        },
-        {
-          title: "尘心音乐特色榜",
-          content: [
-            {
-              name: " 尘心音乐飙升榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 5
-            },
-            {
-              name: " 尘心音乐新歌榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 6
-            },
-            {
-              name: "尘心原创歌曲榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 7
-            },
-            {
-              name: " 尘心音乐热歌榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 8
-            }
-          ]
-        },
-        {
-          title: "尘心音乐特色榜",
-          content: [
-            {
-              name: " 尘心音乐飙升榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 9
-            },
-            {
-              name: " 尘心音乐新歌榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 10
-            },
-            {
-              name: "尘心原创歌曲榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 11
-            },
-            {
-              name: " 尘心音乐热歌榜",
-              intro: "每天更新",
-              img_url: "static/1.png",
-              url: 12
-            }
-          ]
-        }
-      ];
-      this.music_list = [
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        },
-        {
-          num: "1",
-          name: "有没有那么一首歌",
-          time: "3:44",
-          singer: "周华健"
-        }
-      ];
+    getMenu() {
+      this.axios({
+        method: "get",
+        url: "api/users/getrankingmenu"
+      })
+        .then(res => {
+          this.list_menu = res.data;
+        })
+        .catch(err => {
+          throw err;
+        });
     },
-    getData(url) {}
+    getList() {
+      this.axios({
+        method: "get",
+        url: "api/users/getrankinglist",
+        params: {
+          id: this.$route.query.id
+        }
+      })
+        .then(res => {
+          this.music_list = res.data;
+          this.setImg();
+        })
+        .catch(err => {
+          throw err;
+        });
+    },
+    setImg() {
+      if (typeof this.getPath != "number")
+        this.current = this.list_menu[0].content[0];
+      this.list_menu[0].content.forEach(element => {
+        if (element.url == parseInt(this.$route.query.id)) {
+          this.current = element;
+        }
+      });
+    },
+    playList() {
+      this.$store.commit("setCurrentPlayList", this.music_list);
+    }
   },
-  created() {
-    this.$nextTick(() => {
-      this.init();
-    });
+  mounted() {
+    this.getMenu();
+    this.getList();
+  },
+  computed: {
+    getPath() {
+      return this.$route.query.id;
+    }
+  },
+  watch: {
+    getPath(val) {
+      this.getList();
+    }
   }
 };
 </script>
 
 <style lang="less" scoped>
 //外层容器
-
 .border-line {
   height: 100%;
   border: 1px solid #ccc;
@@ -391,19 +227,23 @@ export default {
 
       .title {
         font-size: 24px;
+        margin-bottom: 10px;
       }
 
       .intro {
-        color: darkgray;
+        color: #337ab7;
+        margin-bottom: 10px;
+        display: block;
+        font-size: 12px;
       }
 
       .fun {
         display: flex;
-        justify-content: space-around;
 
         button {
           width: 80px;
           height: 30px;
+          margin-right: 20px;
         }
       }
     }
@@ -496,14 +336,6 @@ export default {
 //正方形容器
 .img-container {
   width: 22%;
-  height: 0;
   padding-bottom: 22%;
-  position: relative;
-
-  .list-item {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-  }
 }
 </style>

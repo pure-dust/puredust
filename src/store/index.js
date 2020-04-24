@@ -20,18 +20,8 @@ export default new Vuex.Store({
     },
     userMusicList: [],
     userCollectedList: [],
-    loginFlag: window.localStorage.getItem('login_flag') || false
-  },
-  actions: {
-    setMusic(context) {
-      context.commit('setMusic')
-    },
-    setUserMusicList(context) {
-      context.commit('setUserMusicList')
-    },
-    setUserInfo(context, info) {
-      context.commit('setUserInfo', info)
-    }
+    loginFlag: window.localStorage.getItem('login_flag') || false,
+    currentPlayList: []
   },
   getters: {
     getMusic: state => {
@@ -48,11 +38,26 @@ export default new Vuex.Store({
     },
     getLoginState: state => {
       return state.loginFlag
+    },
+    getCurrentPlayList: state => {
+      return state.currentPlayList
     }
   },
   mutations: {
     setMusic(state, music) {
       state.music = music
+    },
+    setCurrentPlayList(state, list) {
+      state.currentPlayList = list
+    },
+    addCurrentPlayList(state, music) {
+      let f = true
+      state.currentPlayList.forEach(el => {
+        if (el.music_id == music.music_id)
+          f = false
+      })
+      if (f)
+        state.currentPlayList.push(music)
     },
     setUserMusicList(state, list) {
       state.userMusicList = list
@@ -61,21 +66,12 @@ export default new Vuex.Store({
       state.userCollectedList = list
     },
     setUserInfo(state, info) {
-      state.user_info.id = info.id,
-        state.user_info.name = info.name,
-        state.user_info.head_portrait = info.head_portrait
-    },
-    setUesrId(state, id) {
-      state.user_info.id = id
-      window.localStorage.setItem('user_id', id)
-    },
-    setUserName(state, name) {
-      state.user_info.name = name
-      window.localStorage.setItem('username', name)
-    },
-    setUserImage(state, image) {
-      state.user_info.head_portrait = image
-      window.localStorage.setItem('head_image', image)
+      state.user_info.id = info.id
+      state.user_info.name = info.name
+      state.user_info.head_portrait = info.head_portrait
+      window.localStorage.setItem('user_id', info.id)
+      window.localStorage.setItem('username', info.name)
+      window.localStorage.setItem('head_image', info.head_portrait)
     },
     setLoginState(state, flag) {
       state.loginFlag = flag

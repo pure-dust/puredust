@@ -107,6 +107,13 @@ const routes = [{
     path: '/user/home',
     component: UserInfo,
     meta: {
+      requireLogin: false
+    }
+  }, 
+  {
+    path: '/user/update',
+    component: UserInfo,
+    meta: {
       requireLogin: true
     }
   },
@@ -150,11 +157,12 @@ router.beforeEach((to, from, next) => {
       next()
     else {
       next({
-        path: '/needlogin'
+        path: '/needlogin',
+        query: {
+          redirect: to.fullPath
+        }
       })
     }
-  } else {
-    next()
-  }
+  } else next()
 })
 export default router

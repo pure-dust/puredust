@@ -7,7 +7,7 @@
     <div class="comment">
       <div class="left">
         <div class="img-container">
-          <img :src="this.$store.getters.getUserInfo.head_portrait" alt />
+          <img class="list-item" :src="this.$store.getters.getUserInfo.head_portrait" alt />
         </div>
       </div>
       <div class="right">
@@ -38,7 +38,7 @@
       <div v-for="(item, i) in comments_list" :key="i" class="comments-item">
         <div class="left">
           <div class="img-container">
-            <img :src="item.head_portrait" alt />
+            <img class="list-item" :src="item.head_portrait" alt />
           </div>
         </div>
         <div class="right">
@@ -50,7 +50,7 @@
             : {{ item.comments_content }}
           </div>
           <div class="reply-content comment-content" v-if="item.comments_reply_id != -1">
-            <router-link  
+            <router-link
               class="user-name"
               :to="{path: '/user/home', query: {id: item.subcomments.comments_user_id}}"
             >{{ item.subcomments.comments_user_name }}</router-link>
@@ -115,29 +115,36 @@ export default {
         });
     },
     release(id, k) {
-      this.axios({
-        method: "post",
-        url: "api/users/release",
-        data: {
-          content: k == 1 ? this.inputvalue : this.replyvalue,
-          music_id: this.index,
-          user_id: this.$store.getters.getUserInfo.id,
-          date: new Date(),
-          name: this.$store.getters.getUserInfo.name,
-          kind: this.kind,
-          comments_id: k == 1 ? -1 : id
+      if (this.$store.getters.getLoginState == true) {
+        let content = k == 1 ? this.inputvalue : this.replyvalue;
+        if (content == "") {
+          this.$Toast("评论内容不能为空!");
+          return;
         }
-      })
-        .then(res => {
-          console.log(res);
+        this.axios({
+          method: "post",
+          url: "api/users/release",
+          data: {
+            content: content,
+            music_id: this.index,
+            user_id: this.$store.getters.getUserInfo.id,
+            date: new Date(),
+            name: this.$store.getters.getUserInfo.name,
+            kind: this.kind,
+            comments_id: k == 1 ? -1 : id
+          }
         })
-        .catch(err => {
-          console.log(err);
-        });
-      this.getComments();
-      this.inputvalue = "";
-      this.replyvalue = "";
-      this.reply_id = -1;
+          .then(res => {})
+          .catch(err => {
+            console.log(err);
+          });
+        this.getComments();
+        this.inputvalue = "";
+        this.replyvalue = "";
+        this.reply_id = -1;
+      } else {
+        this.$Toast("请先登录!");
+      }
     },
     replyPage(i) {
       if (i == this.reply_id) this.reply_id = -1;
@@ -217,23 +224,11 @@ export default {
   }
 }
 
-.img-container {
-  width: 100%;
-  height: 0;
-  padding-bottom: 100%;
-  position: relative;
-
-  img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-  }
-}
-
 .left {
   display: flex;
   width: 7%;
 }
+
 .right {
   display: flex;
   flex-direction: column;
@@ -267,9 +262,9 @@ export default {
   .fun-box {
     margin-left: auto;
     font-size: 12px;
-      a {
-        color: #282828;
-      }
+    a {
+      color: #282828;
+    }
   }
 }
 

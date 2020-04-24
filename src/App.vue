@@ -76,15 +76,16 @@
           <span class="login-title">登录</span>
           <span class="close" @click="openLogin"></span>
         </div>
-        <div class="input-container">
-          <label for="username">账号</label>
-          <input type="text" class="username" id="username" autocomplete="off" ref="username" />
-        </div>
-        <div class="input-container">
-          <label for="password">密码</label>
-          <input type="password" class="password" id="password" autocomplete="off" ref="pwd" />
-        </div>
-
+        <form>
+          <div class="input-container">
+            <label for="username">账号</label>
+            <input type="text" class="username" id="username" autocomplete="off" ref="username" />
+          </div>
+          <div class="input-container">
+            <label for="password">密码</label>
+            <input type="password" class="password" id="password" autocomplete="off" ref="pwd" />
+          </div>
+        </form>
         <div class="fun-but">
           <input type="button" value="登录" class="login" @click="login" />
           <input type="button" value="注册" class="register" @click="openRegister" />
@@ -92,17 +93,19 @@
       </div>
       <div class="e-page" v-if="r_flag">
         <div class="login-header">
-          <span class="login-title">登录</span>
-          <span class="close" @click="openLogin"></span>
+          <span class="login-title">注册</span>
+          <span class="close" @click="openRegister"></span>
         </div>
-        <div class="input-container">
-          <label for="username">账号</label>
-          <input type="text" class="username" id="username" autocomplete="off" ref="r_username" />
-        </div>
-        <div class="input-container">
-          <label for="password">密码</label>
-          <input type="password" class="password" id="password" autocomplete="off" ref="r_pwd" />
-        </div>
+        <form>
+          <div class="input-container">
+            <label for="username">账号</label>
+            <input type="text" class="username" id="username" autocomplete="off" ref="r_username" />
+          </div>
+          <div class="input-container">
+            <label for="password">密码</label>
+            <input type="password" class="password" id="password" autocomplete="off" ref="r_pwd" />
+          </div>
+        </form>
         <div class="fun-but">
           <input type="button" value="返回" class="login" @click="openRegister" />
           <input type="button" value="注册" class="register" @click="register" />
@@ -158,17 +161,19 @@ export default {
             console.log(this.$Toast);
             this.$Toast({ message: "用户名或密码错误", time: 3000 });
           } else {
-            this.$store.dispatch("setUserInfo", res.data);
             this.user_info = res.data;
             this.ifLogin = true;
             this.loginFlag = false;
             localStorage.clear();
-            this.$store.commit("setUesrId", res.data.id);
-            this.$store.commit("setUserName", res.data.name);
-            this.$store.commit("setUserImage", res.data.head_portrait);
+            this.$store.commit("setUserInfo", res.data);
             this.$store.commit("setLoginState", this.ifLogin);
             this.getPlayList();
             this.getCollectionList();
+            let redirect = decodeURIComponent(
+              this.$route.query.redirect || this.$route.path
+            );
+            let query = this.$route.query || {};
+            this.$router.push({ path: redirect, query: query });
           }
         })
         .catch(err => {
@@ -180,6 +185,11 @@ export default {
       this.ifLogin = false;
       this.$store.commit("infoInit");
       this.showUserPanel();
+      this.reload();
+      this.$router.push({ path: "/" });
+      localStorage.clear();
+      this.$cookies.remove("menu_index");
+      this.selected_index = 1;
     },
     showUserPanel() {
       this.ifshowUserPanel = !this.ifshowUserPanel;
@@ -236,6 +246,13 @@ export default {
     register() {
       let name = this.$refs.r_username.value;
       let pwd = this.$refs.r_pwd.value;
+      if (name == "" || name == undefined) {
+        this.$Toast("用户名不能为空");
+        return;
+      } else if (pwd == "" || pwd == undefined) {
+        this.$Toast("密码不能为空");
+        return;
+      }
       this.axios({
         method: "post",
         url: "api/users/createaccount",
@@ -245,10 +262,12 @@ export default {
         }
       })
         .then(res => {
-          console.log(res.data);
+          if (res.data == "exist") this.$Toast("该用户名已存在!");
+          else if (res.data == "success") this.$Toast("注册成功!");
         })
         .catch(err => {
-          console.log(err);
+          this.$Toast("注册失败!");
+          throw err;
         });
     }
   },
@@ -267,7 +286,6 @@ export default {
 <style lang="less" scoped>
 .main-content {
   width: 100%;
-  height: 100%;
   a {
     text-decoration: none;
     color: lightgray;

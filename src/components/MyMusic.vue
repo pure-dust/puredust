@@ -31,7 +31,7 @@
               </div>
               <div class="intro">
                 <p>{{ item.name }}</p>
-                <p>{{ play_list.length }}首</p>
+                <p>{{ item.num }}首</p>
               </div>
             </li>
           </ul>
@@ -58,7 +58,7 @@
               </div>
               <div class="intro">
                 <p>{{ item.name }}</p>
-                <p>{{ item.number }}首</p>
+                <p>{{ item.num }}首</p>
               </div>
             </li>
           </ul>
@@ -68,16 +68,18 @@
         <div class="content-box">
           <div class="header">
             <div class="img-container">
-              <img src="static/1.png" alt class="list-item" />
+              <img :src="info.cover" alt class="list-item" />
               <div class="img-border"></div>
             </div>
             <div class="header-detail">
-              <div class="title">11</div>
-              <div class="intro">11</div>
+              <div class="title">{{ info.name }}</div>
+              <router-link
+                class="intro"
+                :to="{ path: '/user/home',query:{id: info.author} }"
+              >{{ info.author }}</router-link>
               <div class="fun">
-                <button type="button">播放</button>
-                <button type="button">收藏</button>
-                <button type="button">下载</button>
+                <button type="button" @click="playList">播放</button>
+                <button type="button" @click="downLoad">下载</button>
                 <button type="button">评论</button>
               </div>
             </div>
@@ -142,7 +144,8 @@ export default {
       play_list: [],
       collected_list: [],
       create_list_flag: false,
-      song_list: []
+      song_list: [],
+      info: {}
     };
   },
   methods: {
@@ -194,11 +197,29 @@ export default {
         }
       })
         .then(res => {
-          this.song_list = res.data;
+          this.song_list = res.data.list;
+          this.info = res.data.info;
         })
         .catch(err => {
           console.log(err);
         });
+    },
+    playList() {
+      this.$store.commit("setCurrentPlayList", this.song_list);
+    },
+    downLoad() {
+      let alink = [];
+      for (let i = 0; i < this.song_list.length; i++) {
+        alink[i] = document.createElement("a");
+        alink[i].setAttribute(
+          "href",
+          `http://127.0.0.1:5050/users/downloadmusic?id=${this.song_list[i].music_id}`
+        );
+        let e = document.createEvent("MouseEvent");
+        e.initEvent("click", false, true);
+        alink[i].dispatchEvent(e);
+        console.log(alink[i]);
+      }
     }
   },
   created() {
@@ -399,19 +420,10 @@ export default {
     background: #f4f2f2;
   }
 }
-
 //正方形容器
 .img-container {
   width: 18%;
-  height: 0;
   padding-bottom: 18%;
-  position: relative;
-
-  .list-item {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-  }
 }
 //右侧容器
 .content-box {
@@ -421,21 +433,22 @@ export default {
     padding: 40px;
 
     .header-detail {
-      width: 70%;
-      height: 100%;
-      padding-left: 20px;
+      padding: 0 20px;
 
       .title {
         font-size: 24px;
+        margin-bottom: 10px;
       }
 
       .intro {
-        color: darkgray;
+        color: #337ab7;
+        margin-bottom: 10px;
+        display: block;
       }
 
       .fun {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
 
         button {
           width: 80px;

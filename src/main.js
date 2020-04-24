@@ -9,6 +9,8 @@ import music_play from './components/publicComponents/play/play-music.js'
 import Toast from './plugins/toast/toast.js'
 import Cookie from 'vue-cookies'
 import comments from './components/publicComponents/comments/comments.js'
+import error from './components/publicComponents/error/error.js'
+import songs from './components/publicComponents/songs/songs.js'
 
 Vue.config.productionTip = false
 
@@ -18,6 +20,8 @@ Vue.use(swipe)
 Vue.use(music_play)
 Vue.use(Toast)
 Vue.use(comments)
+Vue.use(error)
+Vue.use(songs)
 
 $cookies.config('', '/')
 

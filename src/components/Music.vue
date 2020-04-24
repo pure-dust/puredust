@@ -5,7 +5,7 @@
         <div class="music-detail">
           <div class="detail-left">
             <div class="img-container">
-              <img :src="music.music_cover" alt />
+              <img class="list-item" :src="music.music_cover" alt />
             </div>
           </div>
           <div class="detail-right">
@@ -22,9 +22,9 @@
             </div>
             <div class="fun-btn">
               <a class="play-btn nor-btn e-btn" href="javascript:;" @click="playMusic">播放</a>
-              <a class="plus-btn nor-btn e-btn" href="javascript:;">+</a>
+              <a class="plus-btn nor-btn e-btn" href="javascript:;" @click="pushList">+</a>
               <a class="nor-btn" href="javascript:;" @click="collectMusic">收藏</a>
-              <a class="nor-btn" href="javascript:;">下载</a>
+              <a class="nor-btn" href="javascript:;" @click="downLoad">下载</a>
               <a class="nor-btn" href="javascript:;" @click="scrolled('#comments')">评论</a>
             </div>
             <div class="collect" v-if="collectedFlag">
@@ -35,11 +35,11 @@
                 <ul>
                   <li v-for="(item, i) in play_list" :key="i" @click="addMusic(item.id)">
                     <div class="img-container">
-                      <img :src="item.cover" alt />
+                      <img class="list-item" :src="item.cover" alt />
                     </div>
                     <div class="list-name">
                       <p>{{ item.name }}</p>
-                      <p>{{ item.length }}首</p>
+                      <p>{{ play_list.length }}首</p>
                     </div>
                   </li>
                 </ul>
@@ -87,6 +87,7 @@ export default {
     },
     playMusic() {
       this.$store.commit("setMusic", this.music);
+      this.$store.commit("setCurrentPlayList", [this.music]);
     },
     collectMusic() {
       this.collectedFlag = !this.collectedFlag;
@@ -115,7 +116,17 @@ export default {
       document.body.scrollTop = anchor.offsetTop;
       document.documentElement.scrollTop = anchor.offsetTop;
     },
-    MusicList() {}
+    pushList() {
+      this.$store.commit("addCurrentPlayList", this.music);
+    },
+    downLoad() {
+      let alink = document.createElement("a");
+      alink.setAttribute(
+        "href",
+        `http://127.0.0.1:5050/users/downloadmusic?id=${this.id}`
+      );
+      alink.click();
+    }
   },
   created() {
     this.getMusic();
@@ -142,21 +153,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.border-line {
-  height: 100%;
-  border: 1px solid rgba(28, 28, 28, 0.3);
-  border-top: none;
-  display: flex;
-  background: #ffffff;
+.left {
+  flex: 2.5;
+  border-right: 1px solid rgba(28, 28, 28, 0.3);
+}
 
-  .left {
-    flex: 2.5;
-    border-right: 1px solid rgba(28, 28, 28, 0.3);
-  }
-
-  .right {
-    flex: 1;
-  }
+.right {
+  flex: 1;
 }
 
 .left {
@@ -164,20 +167,15 @@ export default {
 
   .music-detail {
     display: flex;
-
-    .detail-left {
-      .img-container {
-        border: 30px solid #282828;
-        border-radius: 50%;
-        width: 180px;
-        height: 180px;
-        overflow: hidden;
-
-        img {
-          width: 100%;
-          height: 100%;
-        }
-      }
+    margin-bottom: 40px;
+    
+    .img-container {
+      border: 30px solid #282828;
+      border-radius: 50%;
+      width: 180px;
+      height: 180px;
+      overflow: hidden;
+      padding: 0;
     }
 
     .detail-right {
@@ -293,6 +291,7 @@ export default {
       width: 10px;
       height: 10px;
       margin-left: auto;
+      cursor: pointer;
     }
 
     .close::before {
@@ -320,7 +319,7 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
     width: 100%;
-    height: 100%;
+    height: 320px;
 
     ul {
       li {
@@ -337,12 +336,7 @@ export default {
         width: 12%;
         height: 0;
         padding-bottom: 12%;
-
-        img {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-        }
+        border: none;
       }
 
       .list-name {

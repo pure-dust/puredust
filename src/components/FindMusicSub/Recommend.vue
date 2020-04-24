@@ -15,24 +15,24 @@
                   <a href>{{ item }}</a>
                 </li>
               </ul>
-              <a href class="more">更多</a>
+              <a href="#/findmusic/playlist" class="more">更多</a>
             </div>
             <div class="song-sheet">
               <div v-for="(item, i) in music_list" :key="i" class="detail-container">
                 <div class="img-container">
                   <router-link
                     :to="{path: '/playlist', query:{id: item.id}}"
-                    :title="item.title"
+                    :title="item.name"
                     class="link"
                   >
-                    <img :src="item.music_cover" alt class="list-item" />
+                    <img :src="item.cover" alt class="list-item" />
                   </router-link>
                 </div>
                 <div class="bottom">
                   <router-link
                     :to="{path: '/playlist', query:{id: item.id}}"
-                    :title="item.title"
-                  >{{ item.music_name }}</router-link>
+                    :title="item.name"
+                  >{{ item.name }}</router-link>
                 </div>
               </div>
             </div>
@@ -132,20 +132,24 @@
             <div class="music-recommend">
               <i class="icon"></i>
               <a href class="title">榜单</a>
-              <a href class="more">更多</a>
+              <a href="#/findmusic/toplist" class="more">更多</a>
             </div>
             <div class="ranking-list">
               <div class="ranking-container">
                 <div class="ranking-header">
                   <div class="detail-container">
                     <div class="img-container">
-                      <a href class="link">
-                        <img src="http://p4.music.126.net/DrRIg6CrgDfVLEph9SNh7w==/18696095720518497.jpg?param=100y100" alt class="list-item" />
+                      <a href="#/findmusic/toplist?id=1" class="link">
+                        <img
+                          src="http://p4.music.126.net/DrRIg6CrgDfVLEph9SNh7w==/18696095720518497.jpg?param=100y100"
+                          alt
+                          class="list-item"
+                        />
                       </a>
                     </div>
                   </div>
                   <div class="ranking-title">
-                    <a href>飙升榜</a>
+                    <a href="#/findmusic/toplist?id=1">飙升榜</a>
                     <div class="fun-button">
                       <a href class="glyphicon glyphicon-play-circle"></a>
                       <a href class="glyphicon glyphicon-plus"></a>
@@ -162,20 +166,24 @@
                   </li>
                 </ul>
                 <div class="all-ranking">
-                  <a href>查看全部></a>
+                  <a href="#/findmusic/toplist?id=1">查看全部></a>
                 </div>
               </div>
               <div class="ranking-container">
                 <div class="ranking-header">
                   <div class="detail-container">
                     <div class="img-container">
-                      <a href class="link">
-                        <img src="http://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg?param=100y100" alt class="list-item" />
+                      <a href="#/findmusic/toplist?id=2" class="link">
+                        <img
+                          src="http://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg?param=100y100"
+                          alt
+                          class="list-item"
+                        />
                       </a>
                     </div>
                   </div>
                   <div class="ranking-title">
-                    <a href>飙升榜</a>
+                    <a href>新歌榜</a>
                     <div class="fun-button">
                       <a href class="glyphicon glyphicon-play-circle"></a>
                       <a href class="glyphicon glyphicon-plus"></a>
@@ -192,7 +200,7 @@
                   </li>
                 </ul>
                 <div class="all-ranking">
-                  <a href>查看全部></a>
+                  <a href="#/findmusic/toplist">查看全部></a>
                 </div>
               </div>
               <div class="ranking-container">
@@ -200,12 +208,16 @@
                   <div class="detail-container">
                     <div class="img-container">
                       <a href class="link">
-                        <img src="http://p4.music.126.net/sBzD11nforcuh1jdLSgX7g==/18740076185638788.jpg?param=100y100" alt class="list-item" />
+                        <img
+                          src="http://p4.music.126.net/sBzD11nforcuh1jdLSgX7g==/18740076185638788.jpg?param=100y100"
+                          alt
+                          class="list-item"
+                        />
                       </a>
                     </div>
                   </div>
                   <div class="ranking-title">
-                    <a href>飙升榜</a>
+                    <a href="#/findmusic/toplist?id=3">原创榜</a>
                     <div class="fun-button">
                       <a href class="glyphicon glyphicon-play-circle"></a>
                       <a href class="glyphicon glyphicon-plus"></a>
@@ -222,7 +234,7 @@
                   </li>
                 </ul>
                 <div class="all-ranking">
-                  <a href>查看全部></a>
+                  <a href="#/findmusic/toplist?id=3">查看全部></a>
                 </div>
               </div>
             </div>
@@ -240,20 +252,25 @@
             <ul class="singer-container">
               <div class="singer-title">
                 <span>入驻歌手</span>
-                <a href>查看更多></a>
+                <a href="#/findmusic/artist">查看更多></a>
               </div>
               <li class="singer-list" v-for="(item, i) in musician" :key="i">
-                <a :href="item.url" class="content-box">
+                <router-link
+                  :to="{ path: '/artist', query:{
+                  id: item.id
+                } }"
+                  class="content-box"
+                >
                   <div class="detail-container">
                     <div class="img-container">
-                      <img :src="item.head_portrait" alt class="list-item" />
+                      <img :src="item.cover" alt class="list-item" />
                     </div>
                   </div>
                   <div class="singer-detail">
                     <div class="singer-name">{{ item.name }}</div>
-                    <div class="singer-intro">{{ item.intro }}</div>
+                    <div class="singer-intro">{{ item.name }}</div>
                   </div>
-                </a>
+                </router-link>
               </li>
             </ul>
           </div>
@@ -327,7 +344,7 @@ export default {
     getRankingList() {
       this.axios({
         methods: "GET",
-        url: "api/users/getrankinglist"
+        url: "api/users/getranking"
       })
         .then(res => {
           this.ranking_list = res.data;
@@ -726,28 +743,20 @@ export default {
   margin: 0 8% 0 0;
   width: 19%;
 
-  .img-container {
+  .link {
     width: 100%;
-    height: 0;
-    padding-bottom: 100%;
-    position: relative;
+    height: 100%;
+    position: absolute;
+    display: block;
+  }
 
-    .link {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      display: block;
-      // padding: 10px;
-    }
+  .list-item {
+    width: 100%;
+    height: 100%;
+  }
 
-    .list-item {
-      width: 100%;
-      height: 100%;
-    }
-
-    .list-item:hover {
-      cursor: pointer;
-    }
+  .list-item:hover {
+    cursor: pointer;
   }
 
   .bottom {

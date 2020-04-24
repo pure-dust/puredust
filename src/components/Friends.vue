@@ -13,7 +13,7 @@
           <div class="dynamic-detail" v-for="(item, i) in dynamic" :key="i">
             <div class="head-img">
               <div class="img-container">
-                <img :src="item.head_portrait" alt />
+                <img class="list-item" :src="item.head_portrait" alt />
               </div>
             </div>
             <div class="dynamic-content">
@@ -25,7 +25,7 @@
               <div class="dynamic-message">{{ item.dynamic_content }}</div>
               <div class="dynamic-music" v-if="item.music">
                 <div class="img-container">
-                  <img :src="item.music.music_cover" alt />
+                  <img class="list-item" :src="item.music.music_cover" alt />
                 </div>
                 <div class="music-detail">
                   <p class="name">{{ item.music.music_name }}</p>
@@ -69,27 +69,27 @@
               </div>
               <div class="add-detail" v-else-if="musicInfo != ''">
                 <div class="img-container">
-                  <img :src="musicInfo.music_cover" alt />
+                  <img class="list-item" :src="musicInfo.music_cover" alt />
                 </div>
                 <div class="song-name">{{ musicInfo.music_name }}</div>
                 <div class="singer">{{ musicInfo.music_singer }}</div>
               </div>
               <div class="add-detail" v-else-if="singerInfo != ''">
                 <div class="img-container">
-                  <img :src="singerInfo.head_portrait" alt />
+                  <img class="list-item" :src="singerInfo.head_portrait" alt />
                 </div>
                 <div class="song-name">{{ singerInfo.name }}</div>
               </div>
               <div class="add-detail" v-else-if="albumInfo != ''">
                 <div class="img-container">
-                  <img :src="albumInfo.cover" alt />
+                  <img class="list-item" :src="albumInfo.cover" alt />
                 </div>
                 <div class="song-name">{{ albumInfo.name }}</div>
                 <div class="singer">{{ albumInfo.author }}</div>
               </div>
               <div class="add-detail" v-else-if="listInfo != ''">
                 <div class="img-container">
-                  <img :src="listInfo.cover" alt />
+                  <img class="list-item" :src="listInfo.cover" alt />
                 </div>
                 <div class="song-name">{{ listInfo.name }}</div>
                 <div class="singer">{{ listInfo.author }}</div>
@@ -191,6 +191,7 @@
 
 <script>
 export default {
+  inject: ["reload"],
   data() {
     return {
       dynamic: [],
@@ -247,6 +248,10 @@ export default {
       return url;
     },
     releaseDynamic() {
+      if (this.dynamic_value == "") {
+        this.$Toast("内容不能为空!");
+        return;
+      }
       let temp = { kind: -1, addition: -1 };
       if (this.musicInfo != "") {
         temp.kind = 1;
@@ -278,6 +283,8 @@ export default {
         .catch(err => {
           throw err;
         });
+      this.releasePage();
+      this.reload();
     },
     setInfo(item) {
       this.musicInfo = this.singerInfo = this.albumInfo = this.listInfo = "";
@@ -321,35 +328,6 @@ export default {
   created() {
     this.getDynamic();
   },
-  filters: {
-    dataFormat(time) {
-      let date = new Date(time);
-      let currentDate = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-      let hour = date.getHours();
-      let minute = date.getMinutes();
-      if (year == currentDate.getFullYear()) {
-        if (month == currentDate.getMonth() + 1) {
-          if (day == currentDate.getDate()) {
-            if (hour == currentDate.getHours()) {
-              return (
-                parseInt(currentDate.getMinutes()) - parseInt(minute) + "分钟前"
-              );
-            } else {
-              if (minute < 10) minute = "0" + minute;
-              return hour + ":" + minute;
-            }
-          }
-        } else {
-          return month + "月" + day + "日 " + hour + ":" + minute;
-        }
-      } else {
-        return year + "年" + month + "月" + day + "日 " + hour + ":" + minute;
-      }
-    }
-  },
   watch: {
     searchValue(val) {
       if (val === "") {
@@ -370,22 +348,14 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.border-line {
-  height: 100%;
-  display: flex;
-  border: 1px solid rgba(28, 28, 28, 0.3);
-  border-top: none;
-  background: #fff;
+.left {
+  flex: 2;
+  border-right: 1px solid #ccc;
+  padding: 10px 20px;
+}
 
-  .left {
-    flex: 2;
-    border-right: 1px solid rgba(28, 28, 28, 0.3);
-    padding: 10px 20px;
-  }
-
-  .right {
-    flex: 1;
-  }
+.right {
+  flex: 1;
 }
 
 .header {
@@ -427,18 +397,6 @@ export default {
 
     .head-img {
       width: 8%;
-
-      .img-container {
-        width: 100%;
-        padding-bottom: 100%;
-        position: relative;
-
-        img {
-          width: 100%;
-          height: 100%;
-          position: absolute;
-        }
-      }
     }
 
     .dynamic-content {
@@ -452,6 +410,8 @@ export default {
         }
         .kinds {
           color: #666;
+          margin-left: 5px;
+          font-size: 12px;
         }
       }
 
@@ -479,13 +439,6 @@ export default {
         .img-container {
           width: 8%;
           padding-bottom: 8%;
-          position: relative;
-
-          img {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-          }
         }
 
         .music-detail {
@@ -597,13 +550,6 @@ export default {
         .img-container {
           width: 8%;
           padding-bottom: 8%;
-          position: relative;
-
-          img {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-          }
         }
       }
 
@@ -746,13 +692,6 @@ export default {
       .img-container {
         width: 10%;
         padding-bottom: 10%;
-        position: relative;
-
-        img {
-          width: 100%;
-          height: 100%;
-          position: absolute;
-        }
       }
     }
 
