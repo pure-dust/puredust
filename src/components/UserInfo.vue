@@ -189,13 +189,40 @@
           <a href="javascript:void(0);" class="submit" @click="setUpdateInfo">保存</a>
           <router-link :to="{ path: '/user/home',query:{id: userInfo.id} }" class="cancel">取消</router-link>
         </div>
-        <div v-if="IMG" class="img-preview"></div>
+        <div
+          v-if="IMG"
+          class="img-preview"
+          onselectstart="return false;"
+          ondragstart="return false;"
+        >
+          <div class="img-container" onselectstart="return false;" ondragstart="return false;">
+            <img class="list-item" style="opacity: 0.4" :src="default_head" alt />
+            <img class="list-item" :src="default_head" alt ref="img" />
+            <div v-if="ifUpload" class="cover" @mousedown.self="moveCover">
+              <div class="drag-point" @mousedown.self="clip"></div>
+            </div>
+          </div>
+        </div>
         <div class="set-img">
-          <div class="img-box">
+          <div v-if="!IMG" class="img-box">
             <div class="img-container">
               <img class="list-item" :src="userInfo.head_portrait" alt />
               <span v-if="!IMG" class="change-img" @click="openPanel(6)">更换头像</span>
             </div>
+          </div>
+          <div v-if="IMG" class="img-box">
+            <div v-if="!ifUpload" class="img-container" ref="preBox">
+              <img class="list-item" :src="userInfo.head_portrait" alt ref="pre" />
+            </div>
+            <div v-if="ifUpload" class="img-container img-cover" ref="preBox">
+              <img
+                class="preview-item"
+                :src="this.$store.getters.getUserInfo.head_portrait"
+                alt
+                ref="pre"
+              />
+            </div>
+            <span class="preview-tip">图像预览</span>
           </div>
         </div>
       </div>
@@ -237,7 +264,9 @@ export default {
           province: this.S_province,
           city: this.S_city
         }
-      }
+      },
+      default_head: "/assets/image/default_head.png",
+      ifUpload: false
     };
   },
   methods: {
@@ -367,17 +396,84 @@ export default {
       } else {
         let formData = new FormData();
         formData.append("file", file);
+        formData.append("id", this.userInfo.id);
         this.axios({
           method: "post",
           url: "api/users/upheadimg",
           data: formData,
           headers: {
-            'Content-Type': 'multipart/form-data'
+            "Content-Type": "multipart/form-data"
           }
         })
-          .then(res => {})
+          .then(res => {
+            this.userInfo.head_portrait = res.data;
+            this.default_head = res.data;
+            this.ifUpload = true;
+            this.$refs.pre.style.width = (321 / 120) * 180 + "px";
+            this.$refs.pre.style.height = (319 / 120) * 180 + "px";
+            this.$refs.img.style.clip = "rect(0,120px,120px,0)";
+          })
           .catch(err => {});
       }
+    },
+    clip() {
+      var event = event || window.event;
+      var cover = event.target.parentNode;
+      var orginleft = event.pageX;
+      var orginWidth = cover.offsetWidth;
+      document.onmousemove = e => {
+        if (
+          orginWidth + e.clientX - orginleft <= 320 &&
+          orginWidth + e.clientX - orginleft >= 0
+        ) {
+          cover.style.width = orginWidth + e.clientX - orginleft + "px";
+          cover.style.height = orginWidth + e.clientX - orginleft + "px";
+          this.$refs.img.style.clip = `rect(${
+            cover.offsetTop
+          }px,${cover.offsetLeft + cover.offsetWidth}px,${cover.offsetTop +
+            cover.offsetHeight}px, ${cover.offsetLeft}px)`;
+          this.$refs.pre.style.width = (180 / cover.offsetWidth) * 321 + "px";
+          this.$refs.pre.style.height = (180 / cover.offsetHeight) * 321 + "px";
+        }
+      };
+      document.onmouseup = () => {
+        document.onmousemove = document.onmouseup = null;
+      };
+    },
+    moveCover() {
+      var event = event || window.event;
+      var cover = event.target;
+      var orginLeft = event.clientX;
+      var orginHeight = event.clientY;
+      var left = cover.offsetLeft;
+      var top = cover.offsetTop;
+      document.onmousemove = e => {
+        if (
+          left + e.clientX - orginLeft + cover.offsetWidth <= 319 &&
+          left + e.clientX - orginLeft >= 0
+        ) {
+          cover.style.left = left + e.clientX - orginLeft + "px";
+          this.$refs.pre.style.left =
+            -(((left + e.clientX - orginLeft) * 180) / cover.offsetWidth) +
+            "px";
+        }
+        if (
+          top + e.clientY - orginHeight + cover.offsetHeight <= 322 &&
+          top + e.clientY - orginHeight >= 0
+        ) {
+          cover.style.top = top + e.clientY - orginHeight + "px";
+          this.$refs.pre.style.top =
+            -(((top + e.clientY - orginHeight) * 180) / cover.offsetHeight) +
+            "px";
+        }
+        this.$refs.img.style.clip = `rect(${
+          cover.offsetTop
+        }px,${cover.offsetLeft + cover.offsetWidth}px,${cover.offsetTop +
+          cover.offsetHeight}px, ${cover.offsetLeft}px)`;
+      };
+      document.onmouseup = () => {
+        document.onmousemove = document.onmouseup = null;
+      };
     }
   },
   created() {
@@ -800,7 +896,32 @@ export default {
 }
 
 .img-preview {
-  width: 360px;
+  width: 362px;
+  padding-right: 40px;
+  border-right: 1px solid #ccc;
+  margin-right: 20px;
+  -webkit-user-select: none;
+  .img-container {
+    border: 1px solid #ccc;
+  }
+
+  .cover {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    border: 1px solid #fff;
+    cursor: move;
+  }
+  .drag-point {
+    display: block;
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    cursor: se-resize;
+  }
 }
 
 .up-box {
@@ -820,5 +941,26 @@ export default {
     margin-left: 10px;
     color: #666;
   }
+}
+
+.preview-tip {
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  padding: 5px 0;
+}
+
+.preview-item {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+}
+
+.img-cover {
+  overflow: hidden;
+  width: 180px;
+  padding-bottom: 180px;
 }
 </style>
