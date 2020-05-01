@@ -198,29 +198,26 @@
           <div class="img-container" onselectstart="return false;" ondragstart="return false;">
             <img class="list-item" style="opacity: 0.4" :src="default_head" alt />
             <img class="list-item" :src="default_head" alt ref="img" />
-            <div v-if="ifUpload" class="cover" @mousedown.self="moveCover">
+            <div v-if="ifUpload" class="cover" @mousedown.self="moveCover" ref="cover">
               <div class="drag-point" @mousedown.self="clip"></div>
             </div>
           </div>
+          <a href="javascript:void(0);" class="submit" @click="setImg">保存</a>
+          <a href="javascript:void(0);" class="cancel" @click="IMG = !IMG">取消</a>
         </div>
         <div class="set-img">
-          <div v-if="!IMG" class="img-box">
+          <div v-show="!IMG" class="img-box">
             <div class="img-container">
               <img class="list-item" :src="userInfo.head_portrait" alt />
               <span v-if="!IMG" class="change-img" @click="openPanel(6)">更换头像</span>
             </div>
           </div>
-          <div v-if="IMG" class="img-box">
+          <div v-show="IMG" class="img-box">
             <div v-if="!ifUpload" class="img-container" ref="preBox">
               <img class="list-item" :src="userInfo.head_portrait" alt ref="pre" />
             </div>
             <div v-if="ifUpload" class="img-container img-cover" ref="preBox">
-              <img
-                class="preview-item"
-                :src="this.$store.getters.getUserInfo.head_portrait"
-                alt
-                ref="pre"
-              />
+              <img class="preview-item" :src="userInfo.head_portrait" alt ref="pre" />
             </div>
             <span class="preview-tip">图像预览</span>
           </div>
@@ -474,6 +471,33 @@ export default {
       document.onmouseup = () => {
         document.onmousemove = document.onmouseup = null;
       };
+    },
+    setImg() {
+      var pointX = this.$refs.cover.offsetLeft;
+      var pointY = this.$refs.cover.offsetTop;
+      var width = this.$refs.cover.offsetWidth;
+      var height = this.$refs.cover.offsetHeight;
+      console.log(pointX, pointX, width, height);
+      this.axios({
+        method: "post",
+        url: "api/users/submitimg",
+        data: {
+          id: this.userInfo.id,
+          pointX: pointX,
+          pointY: pointY,
+          width: width,
+          height: height
+        }
+      }).then(res => {
+        if (res.data == "success") {
+          this.IMG = !this.IMG;
+          this.$refs.up.files = null;
+          this.$refs.up.value = null;
+          this.default_head = "/assets/image/default_head.png";
+          this.ifUpload = !this.ifUpload;
+          location.reload()
+        } else this.$Toast("更新失败");
+      });
     }
   },
   created() {
@@ -677,6 +701,46 @@ export default {
 
 .set-box {
   display: flex;
+
+  .submit {
+    display: inline-block;
+    font-size: 14px;
+    padding: 5px 20px;
+    border: 1px solid #1965df;
+    border-radius: 4px;
+    color: #fbeeff;
+    background: linear-gradient(#1a7beb, #1965df);
+    box-shadow: inset 0 0 1px #fff, 0 0 1px #fff;
+    cursor: pointer;
+    margin-left: 37px;
+  }
+  .submit:hover {
+    background: linear-gradient(#278cff, #2a77f3);
+  }
+
+  .submit:active {
+    background: linear-gradient(#2b73e6, #1279ee);
+  }
+
+  .cancel {
+    display: inline-block;
+    font-size: 14px;
+    padding: 5px 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #303841;
+    background: linear-gradient(#fafafa, #eeeeee);
+    box-shadow: inset 0 2px 1px #fff, 0 0 1px #fff;
+    cursor: pointer;
+    margin-left: 20px;
+  }
+  .cancel:hover {
+    background: linear-gradient(#fafafa, #ffffff);
+  }
+
+  .cancel:active {
+    background: linear-gradient(#eeeeee, #fafafa 40%);
+  }
 }
 
 .set {
@@ -824,47 +888,6 @@ export default {
       background-color: #eee;
     }
   }
-
-  .submit {
-    display: inline-block;
-    font-size: 14px;
-    padding: 5px 20px;
-    border: 1px solid #1965df;
-    border-radius: 4px;
-    color: #fbeeff;
-    background: linear-gradient(#1a7beb, #1965df);
-    box-shadow: inset 0 0 1px #fff, 0 0 1px #fff;
-    cursor: pointer;
-    margin-left: 37px;
-  }
-  .submit:hover {
-    background: linear-gradient(#278cff, #2a77f3);
-  }
-
-  .submit:active {
-    background: linear-gradient(#2b73e6, #1279ee);
-  }
-
-  .cancel {
-    display: inline-block;
-    font-size: 14px;
-    padding: 5px 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #303841;
-    background: linear-gradient(#fafafa, #eeeeee);
-    box-shadow: inset 0 2px 1px #fff, 0 0 1px #fff;
-    cursor: pointer;
-    margin-left: 20px;
-  }
-
-  .cancel:hover {
-    background: linear-gradient(#fafafa, #ffffff);
-  }
-
-  .cancel:active {
-    background: linear-gradient(#eeeeee, #fafafa 40%);
-  }
 }
 
 .set-img {
@@ -921,6 +944,10 @@ export default {
     bottom: 0;
     background-color: #000;
     cursor: se-resize;
+  }
+
+  .submit {
+    margin: 20px 0 0 0;
   }
 }
 
