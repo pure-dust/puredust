@@ -11,7 +11,14 @@
           <div class="user-name">
             <span>{{ userInfo.name }}</span>
             <i class="gender" :class="{'male':userInfo.gender==1,'female': userInfo.gender ==2 }"></i>
+            <div class="concern-box" v-if="!ifCurrentUser">
+              <span class="concern add" @click="addConcern" v-if="!ifConcern">
+                <i></i> 关注
+              </span>
+              <span class="concern done" v-if="ifConcern">已关注</span>
+            </div>
             <router-link
+              v-if="ifCurrentUser"
               :to="{ path: '/user/update',query:{id: userInfo.id} }"
               class="set-btn"
               href="javascript:void(0);"
@@ -35,7 +42,7 @@
             <div>
               <span class="info-t">
                 所在地区:
-                <span>{{ userInfo.province + "省 - " + userInfo.city }}</span>
+                <span>{{ userInfo.province + " - " + userInfo.city }}</span>
               </span>
               <span class="info-t">
                 年龄:
@@ -263,7 +270,9 @@ export default {
         }
       },
       default_head: "/assets/image/default_head.png",
-      ifUpload: false
+      ifUpload: false,
+      ifCurrentUser: true,
+      ifConcern: false
     };
   },
   methods: {
@@ -281,7 +290,7 @@ export default {
         method: "get",
         url: "api/users/getsocialinfo",
         params: {
-          id: this.userInfo.id
+          id: this.$store.getters.getUserInfo.id
         }
       })
         .then(res => {
@@ -346,6 +355,8 @@ export default {
       this.axios.all([this.getUserInfo(), this.getSetting()]).then(
         this.axios.spread((res1, res2) => {
           this.userInfo = res1.data;
+          this.ifCurrentUser =
+            this.userInfo.id == this.$store.getters.getUserInfo.id;
           this.age = new Date(this.userInfo.birthday).getFullYear();
           this.S_year = this.age;
           this.S_month = new Date(this.userInfo.birthday).getMonth() + 1;
@@ -495,8 +506,41 @@ export default {
           this.$refs.up.value = null;
           this.default_head = "/assets/image/default_head.png";
           this.ifUpload = !this.ifUpload;
-          location.reload()
+          location.reload();
         } else this.$Toast("更新失败");
+      });
+    },
+    addConcern() {
+      this.axios({
+        method: "POST",
+        url: "api/users/addconcern",
+        data: {
+          userId: this.$store.getters.getUserInfo.id,
+          concernId: this.userInfo.id
+        }
+      })
+        .then(res => {
+          if (res.data == "exist") this.$Toast("已在关注列表");
+          else if (res.data == "self") this.$Toast("不能关注自己哦");
+          else this.ifConcern = true;
+        })
+        .catch(err => {
+          throw err;
+        });
+    },
+    getConern() {
+      this.axios({
+        method: "GET",
+        url: "api/users/getconcern",
+        params: {
+          userId: this.$store.getters.getUserInfo.id,
+          concernId: this.userInfo.id
+        }
+      }).then(res => {
+        if (res.data == 1) this.ifConcern = true;
+        else this.ifConcern = false;
+      }).catch(err =>{
+        throw err
       });
     }
   },
@@ -508,6 +552,7 @@ export default {
   mounted() {
     this.getAll();
     this.getSocialInfo();
+    this.getConern();
   },
   filters: {
     age(vl) {
@@ -601,6 +646,48 @@ export default {
 
       .female {
         background-position: -41px -27px;
+      }
+
+      .concern-box {
+        display: flex;
+        align-items: center;
+      }
+
+      .concern {
+        border: 1px solid #999;
+        font-size: 12px;
+        height: 24px;
+        width: 40px;
+        line-height: 24px;
+        padding: 0 10px;
+        text-align: center;
+        margin-left: 10px;
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+
+        i {
+          position: absolute;
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          left: 5px;
+          top: 5px;
+          background: url(/assets/image/add.png) no-repeat;
+          background-size: cover;
+        }
+      }
+
+      .add {
+        text-align: right;
+        color: #fff;
+        background: linear-gradient(#4391da, #1d6ebe);
+        border: 1px solid #3f72af;
+        box-shadow: 0 0 1px #999;
+      }
+
+      .done {
+        color: #666;
       }
     }
 

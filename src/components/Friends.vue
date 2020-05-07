@@ -130,7 +130,7 @@
                   @click="setInfo(item)"
                 >
                   <div class="img-container">
-                    <img :src="item.music_cover" alt />
+                    <img class="list-item" :src="item.music_cover" alt />
                   </div>
                   <div class="song-name">{{ item.music_name }}</div>
                   <div class="singer">{{ item.music_singer }}</div>
@@ -144,7 +144,7 @@
                   @click="setInfo(item)"
                 >
                   <div class="img-container">
-                    <img :src="item.head_portrait" alt />
+                    <img class="list-item" :src="item.head_portrait" alt />
                   </div>
                   <div class="song-name">{{ item.name }}</div>
                 </div>
@@ -157,7 +157,7 @@
                   @click="setInfo(item)"
                 >
                   <div class="img-container">
-                    <img :src="item.cover" alt />
+                    <img class="list-item" :src="item.cover" alt />
                   </div>
                   <div class="song-name">{{ item.name }}</div>
                   <div class="singer">{{ item.author }}</div>
@@ -171,7 +171,7 @@
                   @click="setInfo(item)"
                 >
                   <div class="img-container">
-                    <img :src="item.cover" alt />
+                    <img class="list-item" :src="item.cover" alt />
                   </div>
                   <div class="song-name">{{ item.name }}</div>
                   <div class="singer">{{ item.author }}</div>
@@ -236,7 +236,7 @@ export default {
           this.searchResult = res.data;
         })
         .catch(err => {
-          console.log(err);
+          throw err;
         });
     },
     setSearchUrl(index) {
